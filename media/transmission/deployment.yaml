@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transmission
+  namespace: media
+  labels:
+    app: transmission
+spec:
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: transmission
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: transmission
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: nuclearbombcell-2
+      containers:
+      - image: haugene/transmission-openvpn:5.3.2
+        name: transmission
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        envFrom:
+        - configMapRef:
+            name: transmission
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        ports:
+        - containerPort: 9091
+        resources:
+          limits:
+            cpu: "1"
+            memory: 512Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 1m
+            memory: 64Mi
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/transmission/cache
+          type: DirectoryOrCreate
+      securityContext:
+        fsGroup: 1000

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr
+  namespace: media
+  labels:
+    app: radarr
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: radarr
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: nuclearbombcell-2
+      containers:
+      - image: linuxserver/radarr:latest
+        name: radarr
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: movies
+          mountPath: /movies
+        ports:
+        - containerPort: 7878
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1024Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 0.5
+            memory: 256Mi
+      volumes:
+      - name: config
+        nfs:
+            server: 192.168.1.215
+            path: /meow/radarr/config
+            readOnly: false
+      - name: movies
+        nfs:
+            server: 192.168.1.215
+            path: /media/movies
+            readOnly: false
+      - name: transmission
+        nfs:
+            server: 192.168.1.215
+            path: /data/transmission/cache
+            readOnly: false

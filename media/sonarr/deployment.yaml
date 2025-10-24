@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+  namespace: media
+  labels:
+    app: sonarr
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: nuclearbombcell-2
+      containers:
+      - image: linuxserver/sonarr:latest
+        name: sonarr
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: tv
+          mountPath: /tv
+        ports:
+        - containerPort: 8989
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1024Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 0.5
+            memory: 256Mi
+      volumes:
+      - name: config
+        nfs:
+            server: 192.168.1.215
+            path: /meow/sonarr/config
+            readOnly: false
+      - name: tv
+        nfs:
+            server: 192.168.1.215
+            path: /media/tv
+            readOnly: false
+      - name: transmission
+        nfs:
+            server: 192.168.1.215
+            path: /data/transmission/cache
+            readOnly: false

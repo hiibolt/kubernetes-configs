@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyseerr
+  namespace: media
+  labels:
+    app: jellyseerr
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyseerr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jellyseerr
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: nuclearbombcell-2
+      containers:
+      - image: fallenbagel/jellyseerr:latest
+        name: jellyseerr
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+        ports:
+        - containerPort: 5055
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1024Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 0.5
+            memory: 256Mi
+      volumes:
+      - name: config
+        nfs:
+            server: 192.168.1.215
+            path: /meow/jellyseerr/config
+            readOnly: false

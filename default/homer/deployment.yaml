@@ -35,6 +35,7 @@ spec:
             memory: 16Mi
       volumes:
       - name: assets
-        hostPath:
-          path: /data/homer/assets
-          type: DirectoryOrCreate
+        nfs:
+            server: 192.168.1.215
+            path: /meow/homer/assets
+            readOnly: false

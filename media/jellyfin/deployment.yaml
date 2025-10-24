@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  labels:
+    app: jellyfin
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+      - image: jellyfin/jellyfin:latest
+        name: jellyfin
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: cache
+          mountPath: /cache
+        - name: media
+          mountPath: /media
+        ports:
+        - containerPort: 8096
+          protocol: TCP        
+        - containerPort: 7359
+          protocol: UDP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2048Mi
+            ephemeral-storage: 1024Mi
+          requests:
+            cpu: 0.5
+            memory: 1024Mi
+      volumes:
+      - name: config
+        nfs:
+            server: 192.168.1.215
+            path: /meow/jellyfin/config
+            readOnly: false
+      - name: cache
+        nfs:
+            server: 192.168.1.215
+            path: /meow/jellyfin/cache
+            readOnly: false
+      - name: media
+        nfs:
+            server: 192.168.1.215
+            path: /media
+            readOnly: false
