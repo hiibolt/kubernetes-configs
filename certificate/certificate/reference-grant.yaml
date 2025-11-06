@@ -16,7 +16,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: ReferenceGrant
 metadata:
   name: allow-external-secret-to-cert-manager
-  namespace: cert-manager
+  namespace: certificate
 spec:
   from:
     - group: external-secrets.io
