@@ -22,7 +22,7 @@ spec:
         certificateRefs:
           - kind: Secret
             name: hiibolt
-            namespace: certificate
+            namespace: cert-manager
       allowedRoutes:
         namespaces:
           from: All
