@@ -2,6 +2,7 @@ apiVersion: cilium.io/v2alpha1
 kind: CiliumL2AnnouncementPolicy
 metadata:
   name: policy
+  namespace: kube-system
 spec:
   loadBalancerIPs: true
 ---
@@ -9,6 +10,7 @@ apiVersion: cilium.io/v2alpha1
 kind: CiliumLoadBalancerIPPool
 metadata:
   name: pool
+  namespace: kube-system
 spec:
   blocks:
     - start: "192.168.1.216"
