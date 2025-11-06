@@ -11,6 +11,8 @@ spec:
       passwordSecretRef:
         name: hiibolt-pkcs12-secret
         key: password
+      #  name: hiibolt-pkcs12-secret
+      #  key: password
   issuerRef:
     name: letsencrypt-dns
     kind: ClusterIssuer
