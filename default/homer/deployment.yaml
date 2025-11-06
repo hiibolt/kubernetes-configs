@@ -20,6 +20,12 @@ spec:
       containers:
       - image: b4bz/homer:latest
         name: homer
+        env:
+        - name: SECRET
+          valueFrom:
+            secretKeyRef:
+              name: homer-secret
+              key: password
         volumeMounts:
         - name: assets
           mountPath: /www/assets
