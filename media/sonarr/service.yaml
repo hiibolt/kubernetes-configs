@@ -9,6 +9,5 @@ spec:
   - protocol: TCP
     port: 8989
     targetPort: 8989
-    nodePort: 30089
     name: sonarr-portal
-  type: NodePort
+  type: ClusterIP

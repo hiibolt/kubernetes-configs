@@ -9,6 +9,5 @@ spec:
   - protocol: TCP
     port: 5055
     targetPort: 5055
-    nodePort: 30055
     name: jellyseerr-portal
-  type: NodePort
+  type: ClusterIP

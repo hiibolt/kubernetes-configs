@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  labels:
+    app: vaultwarden
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: vaultwarden
+    spec:
+      containers:
+      - image: vaultwarden/server:latest
+        name: vaultwarden
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        ports:
+        - containerPort: 80
+        env:
+        - name: DOMAIN
+          value: "https://vw.hiibolt.com"
+        resources:
+          limits:
+            cpu: "1"
+            memory: 64Mi
+            ephemeral-storage: 64Mi
+          requests:
+            cpu: 10m
+            memory: 16Mi
+      volumes:
+      - name: data
+        nfs:
+            server: 192.168.1.215
+            path: /meow/vaultwarden/data
+            readOnly: false

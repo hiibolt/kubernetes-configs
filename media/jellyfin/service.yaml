@@ -9,11 +9,9 @@ spec:
   - protocol: TCP
     port: 8096
     targetPort: 8096
-    nodePort: 30096
     name: jellyfin-portal
   - protocol: UDP
     port: 7359
     targetPort: 7359
-    nodePort: 30059
     name: jellyfin-udp
-  type: NodePort
+  type: ClusterIP

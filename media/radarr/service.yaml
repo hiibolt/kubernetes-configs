@@ -9,6 +9,5 @@ spec:
   - protocol: TCP
     port: 7878
     targetPort: 7878
-    nodePort: 30078
     name: radarr-portal
-  type: NodePort
+  type: ClusterIP

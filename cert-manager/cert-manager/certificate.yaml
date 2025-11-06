@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: hiibolt
+  namespace: cert-manager
+spec:
+  secretName: hiibolt
+  keystores:
+    pkcs12:
+      create: true
+      passwordSecretRef:
+        name: hiibolt-pkcs12-secret
+        key: password
+  issuerRef:
+    name: letsencrypt-dns
+    kind: ClusterIssuer
+  commonName: '*.hiibolt.com'
+  dnsNames:
+    - '*.hiibolt.com'

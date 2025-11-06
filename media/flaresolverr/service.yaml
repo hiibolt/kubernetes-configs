@@ -9,5 +9,4 @@ spec:
   - protocol: TCP
     port: 8191
     targetPort: 8191
-    nodePort: 30191
-  type: NodePort
+  type: LoadBalancer

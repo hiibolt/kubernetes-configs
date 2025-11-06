@@ -9,6 +9,5 @@ spec:
   - protocol: TCP
     port: 9696
     targetPort: 9696
-    nodePort: 30196
     name: prowlarr-portal
-  type: NodePort
+  type: ClusterIP
