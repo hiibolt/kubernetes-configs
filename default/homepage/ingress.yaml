@@ -13,7 +13,7 @@ metadata:
     gethomepage.dev/name: Homepage
 spec:
   rules:
-    - host: "homepage.my.network"
+    - host: "cluster.hiibolt.com"
       http:
         paths:
           - path: "/"
@@ -21,5 +21,31 @@ spec:
             backend:
               service:
                 name: homepage
+                port:
+                  number: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguard
+  namespace: default
+  labels:
+    app.kubernetes.io/name: homepage
+  annotations:
+    gethomepage.dev/description: AdGuard
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Cluster Management
+    gethomepage.dev/icon: homepage.png
+    gethomepage.dev/name: Adguard
+spec:
+  rules:
+    - host: "adguard.hiibolt.com"
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: adguard
                 port:
                   number: 3000
