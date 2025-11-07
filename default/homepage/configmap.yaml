@@ -8,34 +8,151 @@ metadata:
 data:
   kubernetes.yaml: |
     mode: cluster
-  settings.yaml: ""
-  #settings.yaml: |
-  #  providers:
-  #    longhorn:
-  #      url: https://longhorn.my.network
+    ingress: false
+    gateway: true
+  settings.yaml: |
+    title: hiibolt
+    description: Bare-Metel Kubernetes Cluster
+    background:
+      image: https://raw.githubusercontent.com/hiibolt/nixos/refs/heads/master/backgrounds/5.jpg
+      blur: sm
+      brightness: 50
+    cardBlur: xs
+    color: stone
+    theme: dark
+    headerStyle: boxed
+    layout:
+      Media:
+        style: row
+        columns: 4
+      Cluster Management:
+        style: grid
+        columns: 4
   custom.css: ""
-  custom.js: ""
+  custom.js: |
+    // Right-align the Kubernetes information widget
+    function alignKubernetesWidget() {
+      console.log(":3 Running alignment function");
+      const widgetsWrap = document.getElementById('widgets-wrap');
+      const informationWidgetsRight = document.getElementById('information-widgets-right');
+      const kubernetesWidget = document.querySelector('.information-widget-kubernetes');
+      
+      if (widgetsWrap && informationWidgetsRight && kubernetesWidget) {
+        console.log("Found all elements - moving Kubernetes widget to right container");
+        
+        // Remove the widget from widgets-wrap
+        widgetsWrap.removeChild(kubernetesWidget);
+        
+        // Add it to the information-widgets-right container
+        informationWidgetsRight.appendChild(kubernetesWidget);
+        
+        console.log("Kubernetes widget moved to right container!");
+      } else {
+        console.log("Missing elements:", { 
+          widgetsWrap: !!widgetsWrap, 
+          informationWidgetsRight: !!informationWidgetsRight, 
+          kubernetesWidget: !!kubernetesWidget 
+        });
+      }
+    }
+    
+    // Run on load with delays
+    setTimeout(alignKubernetesWidget, 100);
+    setTimeout(alignKubernetesWidget, 500);
+    setTimeout(alignKubernetesWidget, 1000);
+    
+    // Also observe for dynamic changes
+    const observer = new MutationObserver((mutations) => {
+      const kubernetesWidget = document.querySelector('.information-widget-kubernetes');
+      const informationWidgetsRight = document.getElementById('information-widgets-right');
+      
+      // Only run if kubernetes widget exists and is not in the right container
+      if (kubernetesWidget && informationWidgetsRight && !informationWidgetsRight.contains(kubernetesWidget)) {
+        alignKubernetesWidget();
+      }
+    });
+    
+    if (document.body) {
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
   bookmarks.yaml: |
-    - Developer:
+    - hiibolt:
         - Github:
-            - abbr: GH
-              href: https://github.com/
+            - abbr: ⚡
+              href: https://github.com/hiibolt
+        - Website:
+            - abbr: ⚡
+              href: https://hiibolt.com/portfolio
+        - Steam:
+            - abbr: ⚡
+              href: https://steamcommunity.com/profiles/76561198878742626
+        - LeetCode:
+            - abbr: ⚡
+              href: https://leetcode.com/u/hiibolt/
+        - Replit:
+            - abbr: ⚡
+              href: https://replit.com/@boltgaming
+        - Spotify:
+            - abbr: ⚡
+              href: https://open.spotify.com/user/ekqp91ln4em3c3jjr1c6n4lyd
+              
   services.yaml: |
-    - My First Group:
-        - My First Service:
-            href: http://localhost/
-            description: Homepage is awesome
+    - Media:
+        - Jellyfin:
+            href: "http://jellyfin.hiibolt.com/"
+            description: Media server
+            namespace: media
+            podSelector: "app=jellyfin"
+            widget:
+              type: jellyfin
+              url: http://jellyfin.media.svc.cluster.local:8096
+              key: {{HOMEPAGE_VAR_JELLYFIN_API_KEY}}
+              enableBlocks: true
+              enableNowPlaying: false
+        - Jellyseerr:
+            href: "http://jellyseerr.hiibolt.com/"
+            description: Request media
+            namespace: media
+            podSelector: "app=jellyseerr"
+            widget:
+              type: jellyseerr
+              url: http://jellyseerr.media.svc.cluster.local:5055
+              key: {{HOMEPAGE_VAR_JELLYSEERR_API_KEY}}
+        - Transmission:
+            href: "http://transmission.hiibolt.com/"
+            description: Torrent Client
+            namespace: media
+            podSelector: "app=transmission"
+            widget:
+              type: transmission
+              url: http://transmission.media.svc.cluster.local:9091
+              username: {{HOMEPAGE_VAR_TRANSMISSION_USER}}
+              password: {{HOMEPAGE_VAR_TRANSMISSION_PW}}
+        - Prowlarr:
+            href: "http://prowlarr.hiibolt.com/"
+            description: Indexer Manager
+            namespace: media
+            podSelector: "app=prowlarr"
+            widget:
+              type: prowlarr
+              url: http://prowlarr.media.svc.cluster.local:9696
+              key: {{HOMEPAGE_VAR_PROWLARR_API_KEY}}
 
-    - My Second Group:
-        - My Second Service:
-            href: http://localhost/
-            description: Homepage is the best
-
-    - My Third Group:
-        - My Third Service:
-            href: http://localhost/
-            description: Homepage is 😎
+    - Cluster Management:
+        - Adguard:
+            href: "https://adguard.hiibolt.com/"
+            description: AdGuard Home
+            namespace: default
+            podSelector: "app=adguard"
+            widget:
+              type: adguard
+              url: http://adguard.default.svc.cluster.local:80
+              username: {{HOMEPAGE_VAR_ADGUARD_USER}}
+              password: {{HOMEPAGE_VAR_ADGUARD_PW}}
   widgets.yaml: |
+    - greeting:
+        text_size: lg
+        text: Hii there, welcome back~!
     - kubernetes:
         cluster:
           show: true
@@ -48,13 +165,4 @@ data:
           cpu: true
           memory: true
           showLabel: true
-    - resources:
-        backend: resources
-        expanded: true
-        cpu: true
-        memory: true
-        network: default
-    - search:
-        provider: duckduckgo
-        target: _blank
   docker.yaml: ""

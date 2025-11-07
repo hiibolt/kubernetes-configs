@@ -29,6 +29,41 @@ spec:
           env:
             - name: HOMEPAGE_ALLOWED_HOSTS
               value: cluster.hiibolt.com
+            - name: HOMEPAGE_VAR_JELLYFIN_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jellyfin-api-key
+                  key: JELLYFIN_API_KEY
+            - name: HOMEPAGE_VAR_JELLYSEERR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jellyseerr-api-key
+                  key: JELLYSEERR_API_KEY
+            - name: HOMEPAGE_VAR_ADGUARD_USER
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-login
+                  key: ADGUARD_USER
+            - name: HOMEPAGE_VAR_ADGUARD_PW
+              valueFrom:
+                secretKeyRef:
+                  name: adguard-login
+                  key: ADGUARD_PW
+            - name: HOMEPAGE_VAR_TRANSMISSION_USER
+              valueFrom:
+                secretKeyRef:
+                  name: transmission-login
+                  key: TRANSMISSION_USER
+            - name: HOMEPAGE_VAR_TRANSMISSION_PW
+              valueFrom:
+                secretKeyRef:
+                  name: transmission-login
+                  key: TRANSMISSION_PW
+            - name: HOMEPAGE_VAR_PROWLARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: prowlarr-api-key
+                  key: PROWLARR_API_KEY
           ports:
             - name: http
               containerPort: 3000
