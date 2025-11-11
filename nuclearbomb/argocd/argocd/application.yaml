@@ -27,13 +27,13 @@ spec:
               verbs: ["get", "watch", "list"]
         deploymentAnnotations:
           reloader.stakater.com/auto: "true"
-        redis-ha:
-          enabled: true
-          haproxy:
-            resources:
-              requests:
-                cpu: "100m"
-                memory: "128Mi"
+        #redis-ha:
+        #  enabled: true
+        #  haproxy:
+        #    resources:
+        #      requests:
+        #        cpu: "100m"
+        #        memory: "128Mi"
         server:
           autoscaling:
             enabled: true
@@ -47,7 +47,4 @@ spec:
         applicationSet:
           replicas: 2
   syncPolicy:
-    automated:
-      allowEmpty: true
-      prune: true
-      selfHeal: true
+    automated: null
