@@ -12,7 +12,7 @@ spec:
         repoURL: https://github.com/hiibolt/kubernetes-configs.git
         revision: HEAD
         directories:
-          - path: manifests/*
+          - path: manifests/*/*
   template:
     metadata:
       name: '{{.path.basename}}'
@@ -24,5 +24,6 @@ spec:
         targetRevision: HEAD
       destination:
         server: "https://kubernetes.default.svc"
-        namespace: '{{index .path.segments 0}}'
-      syncPolicy: {}
+        namespace: '{{index .path.segments 1}}'
+      syncPolicy: 
+        automated: null
