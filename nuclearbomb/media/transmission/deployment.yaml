@@ -18,7 +18,7 @@ spec:
         app: transmission
     spec:
       nodeSelector:
-        kubernetes.io/hostname: nuclearbombcell-2
+        kubernetes.io/hostname: nuclearbombcell-1
       containers:
       - image: haugene/transmission-openvpn:5.3.2
         name: transmission
@@ -37,7 +37,7 @@ spec:
           limits:
             cpu: "1"
             memory: 512Mi
-            ephemeral-storage: 64Mi
+            ephemeral-storage: 1Gi
           requests:
             cpu: 1m
             memory: 64Mi

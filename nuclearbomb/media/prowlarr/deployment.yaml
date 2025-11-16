@@ -19,7 +19,7 @@ spec:
         app: prowlarr
     spec:
       nodeSelector:
-        kubernetes.io/hostname: nuclearbombcell-2
+        kubernetes.io/hostname: nuclearbombcell-1
       containers:
       - image: linuxserver/prowlarr:latest
         name: prowlarr
@@ -33,7 +33,7 @@ spec:
           limits:
             cpu: "1"
             memory: 1024Mi
-            ephemeral-storage: 64Mi
+            ephemeral-storage: 1Gi
           requests:
             cpu: 0.5
             memory: 256Mi
