@@ -4,7 +4,7 @@ metadata:
   name: grafana-datasources
   namespace: default
   labels:
-    app: grafana
+    app: mbo-grafana
 data:
   prometheus.yml: |
     apiVersion: 1
@@ -13,7 +13,7 @@ data:
       - name: Prometheus
         type: prometheus
         access: proxy
-        url: http://prometheus:9090
+        url: http://mbo-prometheus:9090
         isDefault: true
         editable: false
         jsonData:

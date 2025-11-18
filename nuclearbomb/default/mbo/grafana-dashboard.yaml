@@ -1,10 +1,4 @@
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: grafana-dashboard-mbo
-  namespace: default
-  labels:
-    app: grafana
 data:
   mbo-metrics.json: |
     {
@@ -706,3 +700,10 @@ data:
       "version": 0,
       "weekStart": ""
     }
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: grafana-dashboard-mbo
+  labels:
+    app: mbo-grafana
+  namespace: default
