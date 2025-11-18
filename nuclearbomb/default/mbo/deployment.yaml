@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mbo-backend
+  namespace: default
+  labels:
+    app: mbo-backend
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mbo-backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mbo-backend
+    spec:
+      containers:
+      - image: ghcr.io/hiibolt/mbo-backend:latest
+        name: mbo-backend
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        env:
+        - name: BIND_ADDRESS
+          value: "0.0.0.0:3000"
+        - name: DB_PATH
+          value: "/app/data/mbo.db"
+        - name: DBN_FILE_PATH
+          value: "/app/assets/CLX5_mbo.dbn"
+        - name: DBN_KEY
+          valueFrom:
+            secretKeyRef:
+              name: mbo-secrets
+              key: dbn-key
+        - name: RUST_LOG
+          value: "info"
+        volumeMounts:
+        - name: mbo-db-data
+          mountPath: /app/data
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+      volumes:
+      - name: mbo-db-data
+        nfs:
+          server: 192.168.1.215
+          path: /meow/mbo/data
+          readOnly: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mbo-frontend
+  namespace: default
+  labels:
+    app: mbo-frontend
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mbo-frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mbo-frontend
+    spec:
+      containers:
+      - image: ghcr.io/hiibolt/mbo-frontend:latest
+        name: mbo-frontend
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 128Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mbo-reverse-proxy
+  namespace: default
+  labels:
+    app: mbo-reverse-proxy
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mbo-reverse-proxy
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: mbo-reverse-proxy
+    spec:
+      containers:
+      - image: nginx:alpine
+        name: nginx
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 30
+          timeoutSeconds: 3
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: mbo-nginx-config
