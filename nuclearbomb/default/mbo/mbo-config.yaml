@@ -1,4 +1,209 @@
+---
+# ============================================================================
+# MBO Application Configuration - ConfigMaps
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Nginx Reverse Proxy Configuration
+# ----------------------------------------------------------------------------
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mbo-nginx-config
+  namespace: default
+  labels:
+    app: mbo-reverse-proxy
+    component: proxy
+data:
+  nginx.conf: |
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+        upstream backend {
+            server mbo-backend:3000;
+        }
+
+        upstream frontend {
+            server mbo-frontend:80;
+        }
+
+        server {
+            listen 80;
+            server_name localhost mbo.hiibolt.com;
+
+            # Backend OpenAPI documentation (root path on backend)
+            location /openapi.json {
+                proxy_pass http://backend/openapi.json;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # Health and observability endpoints
+            location /health {
+                proxy_pass http://backend/health;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                access_log off;
+            }
+
+            location /ready {
+                proxy_pass http://backend/ready;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                access_log off;
+            }
+
+            location /metrics {
+                proxy_pass http://backend/metrics;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            }
+
+            # Backend API routes
+            # Routes: /api/market/export, /api/mbo/stream/json
+            location /api/ {
+                proxy_pass http://backend;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_cache_bypass $http_upgrade;
+                
+                # Long timeout for streaming endpoints
+                proxy_read_timeout 86400s;
+                proxy_connect_timeout 75s;
+                proxy_send_timeout 86400s;
+                
+                # Disable buffering for SSE
+                proxy_buffering off;
+                proxy_cache off;
+            }
+
+            # Frontend routes (everything else)
+            location / {
+                proxy_pass http://frontend;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+        }
+    }
+
+---
+# ----------------------------------------------------------------------------
+# Prometheus Configuration
+# ----------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: default
+  labels:
+    app: mbo-prometheus
+    component: monitoring
+data:
+  prometheus.yml: |
+    # Prometheus configuration for MBO monitoring
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        cluster: 'nuclearbomb'
+        environment: 'production'
+
+    # Scrape configurations
+    scrape_configs:
+      # MBO Backend metrics (through reverse proxy)
+      - job_name: 'mbo-backend'
+        static_configs:
+          - targets: ['mbo-reverse-proxy:80']
+        metrics_path: '/metrics'
+        scrape_interval: 5s
+        scrape_timeout: 3s
+        
+      # Prometheus self-monitoring
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+        scrape_interval: 10s
+
+---
+# ----------------------------------------------------------------------------
+# Grafana Datasources Configuration
+# ----------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: default
+  labels:
+    app: mbo-grafana
+    component: monitoring
+data:
+  prometheus.yml: |
+    apiVersion: 1
+
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://mbo-prometheus:9090
+        isDefault: true
+        editable: false
+        jsonData:
+          timeInterval: "5s"
+
+---
+# ----------------------------------------------------------------------------
+# Grafana Dashboard Provider Configuration
+# ----------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-config
+  namespace: default
+  labels:
+    app: mbo-grafana
+    component: monitoring
+data:
+  mbo.yml: |
+    apiVersion: 1
+    
+    providers:
+      - name: 'MBO Dashboards'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        updateIntervalSeconds: 10
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards
+
+---
+# ----------------------------------------------------------------------------
+# Grafana Dashboard - MBO Metrics
+# ----------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-mbo
+  namespace: default
+  labels:
+    app: mbo-grafana
+    component: monitoring
 data:
   mbo-metrics.json: |
     {
@@ -700,10 +905,3 @@ data:
       "version": 0,
       "weekStart": ""
     }
-kind: ConfigMap
-metadata:
-  creationTimestamp: null
-  name: grafana-dashboard-mbo
-  labels:
-    app: mbo-grafana
-  namespace: default
