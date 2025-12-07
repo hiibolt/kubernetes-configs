@@ -41,6 +41,10 @@ spec:
           value: "/app/data/mbo.db"
         - name: DBN_FILE_PATH
           value: "/app/assets/CLX5_mbo.dbn"
+        - name: ZIP_FILE_PATH
+          value: "/app/data/feed.zip"
+        - name: SNAPSHOTS_FILE_PATH
+          value: "/app/data/snapshots"
         - name: DBN_KEY
           valueFrom:
             secretKeyRef:
@@ -53,7 +57,7 @@ spec:
           mountPath: /app/data
         resources:
           limits:
-            cpu: "2"
+            cpu: "8"
             memory: 2Gi
           requests:
             cpu: 500m

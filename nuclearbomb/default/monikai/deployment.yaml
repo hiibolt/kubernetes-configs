@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monikai
+  namespace: default
+  labels:
+    app: monikai
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monikai
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: monikai
+    spec:
+      containers:
+      - image: ghcr.io/hiibolt/monikai:latest
+        name: monikai
+        env:
+          - name: MONIKAI_NOTION_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: monikai-notion-api-key
+                key: MONIKAI_NOTION_API_KEY
+          - name: MONIKAI_OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: monikai-openai-api-key
+                key: MONIKAI_OPENAI_API_KEY
+          - name: MONIKAI_DISCORD_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: monikai-discord-token
+                key: MONIKAI_DISCORD_TOKEN
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/assets/config.yaml
+          subPath: config.yaml
+          readOnly: false
+        ports:
+        - containerPort: 4000 
+          protocol: TCP        
+        resources:
+          limits:
+            cpu: "5"
+            memory: 256Mi
+            ephemeral-storage: 128Mi
+          requests:
+            cpu: 40m
+      volumes:
+      - name: config-volume
+        configMap:
+          name: monikai-config
+
