@@ -57,10 +57,10 @@ spec:
           mountPath: /app/data
         resources:
           limits:
-            cpu: 5m
+            cpu: 300m
             memory: 4Gi
           requests:
-            cpu: 2m
+            cpu: 100m
             memory: 2Gi
       volumes:
       - name: mbo-db-data
@@ -148,10 +148,10 @@ spec:
           readOnly: true
         resources:
           limits:
-            cpu: 500m
+            cpu: 25m
             memory: 256Mi
           requests:
-            cpu: 100m
+            cpu: 5m
             memory: 64Mi
         livenessProbe:
           httpGet:
@@ -210,10 +210,10 @@ spec:
           mountPath: /prometheus
         resources:
           limits:
-            cpu: "1"
+            cpu: 100m
             memory: 1Gi
           requests:
-            cpu: 250m
+            cpu: 10m
             memory: 256Mi
         livenessProbe:
           httpGet:
@@ -298,7 +298,7 @@ spec:
           readOnly: true
         resources:
           limits:
-            cpu: 15m
+            cpu: 200m
             memory: 512Mi
           requests:
             cpu: 10m
