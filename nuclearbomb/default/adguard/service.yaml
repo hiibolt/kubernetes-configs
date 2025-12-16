@@ -4,6 +4,7 @@ metadata:
   name: adguard
   namespace: default
 spec:
+  type: LoadBalancer
   selector:
     app: adguard
   ports:
@@ -35,4 +36,3 @@ spec:
     name: "443tcp"
     port: 443
     targetPort: 443
-  type: LoadBalancer

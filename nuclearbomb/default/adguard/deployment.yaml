@@ -43,6 +43,7 @@ spec:
             ephemeral-storage: 128Mi
           requests:
             cpu: 10m
+            memory: 256Mi
       volumes:
       - name: work
         nfs:
