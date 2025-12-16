@@ -31,12 +31,12 @@ spec:
           value: "https://vw.hiibolt.com"
         resources:
           limits:
-            cpu: "1"
-            memory: 64Mi
+            cpu: 20m
+            memory: 256Mi
             ephemeral-storage: 64Mi
           requests:
-            cpu: 10m
-            memory: 16Mi
+            cpu: 5m
+            memory: 64Mi
       volumes:
       - name: data
         nfs:
