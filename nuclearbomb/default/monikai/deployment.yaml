@@ -47,11 +47,12 @@ spec:
           protocol: TCP        
         resources:
           limits:
-            cpu: "5"
-            memory: 256Mi
-            ephemeral-storage: 128Mi
+            cpu: 5m
+            memory: 32Mi
+            ephemeral-storage: 32Mi
           requests:
-            cpu: 40m
+            cpu: 2m
+            memory: 16Mi
       volumes:
       - name: config-volume
         configMap:
