@@ -43,4 +43,4 @@ spec:
             ephemeral-storage: 64Mi
           requests:
             cpu: 512m
-            memory: 16Mi
+            memory: 512Mi
