@@ -35,12 +35,12 @@ spec:
           protocol: UDP
         resources:
           limits:
-            cpu: 4
-            memory: 8096Mi
+            cpu: 6
+            memory: 16192Mi
             ephemeral-storage: 1024Mi
           requests:
             cpu: 2
-            memory: 2048Mi
+            memory: 8096Mi
       volumes:
       - name: config
         nfs:
