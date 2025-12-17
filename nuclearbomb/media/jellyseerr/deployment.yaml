@@ -31,11 +31,11 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: 50m
+            cpu: 500m
             memory: 2048Mi
             ephemeral-storage: 1Gi
           requests:
-            cpu: 25m
+            cpu: 150m
             memory: 1024Mi
       volumes:
       - name: config
