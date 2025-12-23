@@ -35,7 +35,6 @@ spec:
           protocol: UDP
         resources:
           limits:
-            cpu: 6
             memory: 16192Mi
             ephemeral-storage: 1024Mi
           requests:

@@ -31,7 +31,6 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: 500m
             memory: 2048Mi
             ephemeral-storage: 1Gi
           requests:
