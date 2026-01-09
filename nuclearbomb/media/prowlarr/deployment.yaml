@@ -40,6 +40,6 @@ spec:
       volumes:
       - name: config
         nfs:
-            server: 192.168.1.215
-            path: /meow/prowlarr/config
+            server: 192.168.1.203
+            path: /mnt/meow/prowlarr/config
             readOnly: false

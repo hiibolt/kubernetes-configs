@@ -42,8 +42,9 @@ spec:
             memory: 64Mi
       volumes:
       - name: data
-        hostPath:
-          path: /data/transmission/cache
-          type: DirectoryOrCreate
+        nfs:
+            server: 192.168.1.203
+            path: /mnt/meow/transmission/cache
+            readOnly: false
       securityContext:
         fsGroup: 1000

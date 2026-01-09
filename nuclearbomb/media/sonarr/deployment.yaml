@@ -42,16 +42,16 @@ spec:
       volumes:
       - name: config
         nfs:
-            server: 192.168.1.215
-            path: /meow/sonarr/config
+            server: 192.168.1.203
+            path: /mnt/meow/sonarr/config
             readOnly: false
       - name: tv
         nfs:
-            server: 192.168.1.215
-            path: /media/tv
+            server: 192.168.1.203
+            path: /mnt/meow/media/tv
             readOnly: false
       - name: transmission
         nfs:
-            server: 192.168.1.215
-            path: /data/transmission/cache
+            server: 192.168.1.203
+            path: /mnt/meow/transmission/cache
             readOnly: false

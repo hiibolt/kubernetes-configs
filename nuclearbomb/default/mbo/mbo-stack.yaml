@@ -65,8 +65,8 @@ spec:
       volumes:
       - name: mbo-db-data
         nfs:
-          server: 192.168.1.215
-          path: /meow/mbo/data
+          server: 192.168.1.203
+          path: /mnt/meow/mbo/data
           readOnly: false
 
 ---
@@ -235,8 +235,8 @@ spec:
           name: prometheus-config
       - name: prometheus-data
         nfs:
-          server: 192.168.1.215
-          path: /meow/mbo/prometheus
+          server: 192.168.1.203
+          path: /mnt/meow/mbo/prometheus
           readOnly: false
 
 ---
@@ -320,8 +320,8 @@ spec:
       volumes:
       - name: grafana-data
         nfs:
-          server: 192.168.1.215
-          path: /meow/mbo/grafana
+          server: 192.168.1.203
+          path: /mnt/meow/mbo/grafana
           readOnly: false
       - name: grafana-datasources
         configMap:

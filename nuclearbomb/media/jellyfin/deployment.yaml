@@ -27,7 +27,7 @@ spec:
         - name: cache
           mountPath: /cache
         - name: media
-          mountPath: /media
+          mountPath: /mnt/meow/media
         ports:
         - containerPort: 8096
           protocol: TCP        
@@ -38,21 +38,21 @@ spec:
             memory: 16192Mi
             ephemeral-storage: 1024Mi
           requests:
-            cpu: 2
+            cpu: "2"
             memory: 8096Mi
       volumes:
       - name: config
         nfs:
-            server: 192.168.1.215
-            path: /meow/jellyfin/config
+            server: 192.168.1.203
+            path: /mnt/meow/jellyfin/config
             readOnly: false
       - name: cache
         nfs:
-            server: 192.168.1.215
-            path: /meow/jellyfin/cache
+            server: 192.168.1.203
+            path: /mnt/meow/jellyfin/cache
             readOnly: false
       - name: media
         nfs:
-            server: 192.168.1.215
-            path: /media
+            server: 192.168.1.203
+            path: /mnt/meow/media
             readOnly: false

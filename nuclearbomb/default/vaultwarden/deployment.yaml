@@ -40,6 +40,6 @@ spec:
       volumes:
       - name: data
         nfs:
-            server: 192.168.1.215
-            path: /meow/vaultwarden/data
+            server: 192.168.1.203
+            path: /mnt/meow/vaultwarden/data
             readOnly: false

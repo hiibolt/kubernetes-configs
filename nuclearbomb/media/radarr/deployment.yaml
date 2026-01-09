@@ -42,16 +42,16 @@ spec:
       volumes:
       - name: config
         nfs:
-            server: 192.168.1.215
-            path: /meow/radarr/config
+            server: 192.168.1.203
+            path: /mnt/meow/radarr/config
             readOnly: false
       - name: movies
         nfs:
-            server: 192.168.1.215
-            path: /media/movies
+            server: 192.168.1.203
+            path: /mnt/meow/media/movies
             readOnly: false
       - name: transmission
         nfs:
-            server: 192.168.1.215
-            path: /data/transmission/cache
+            server: 192.168.1.203
+            path: /mnt/meow/data/transmission/cache
             readOnly: false
