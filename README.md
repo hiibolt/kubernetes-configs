@@ -31,3 +31,16 @@ echo "$argocd_values" | helm template $argocd_name $argocd_chart --repo $argocd_
 
 echo "$argocd_config" | kubectl apply --filename -
 ```
+
+## Setting up Cilium
+```bash
+export cilium_applicationyaml=$(curl -sL "https://raw.githubusercontent.com/hiibolt/kubernetes-configs/refs/heads/main/nuclearbomb/kube-system/cilium/application.yaml" | yq eval-all '. | select(.metadata.name == "cilium-application" and .kind == "Application")' -)
+export cilium_name=$(echo "$cilium_applicationyaml" | yq eval '.metadata.name' -)
+export cilium_chart=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.chart' -)
+export cilium_repo=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.repoURL' -)
+export cilium_namespace=$(echo "$cilium_applicationyaml" | yq eval '.spec.destination.namespace' -)
+export cilium_version=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.targetRevision' -)
+export cilium_values=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.helm.valuesObject' -)
+
+echo "$cilium_values" | helm template $cilium_name $cilium_chart --repo $cilium_repo --version $cilium_version --namespace $cilium_namespace --values - | kubectl apply --namespace $cilium_namespace --filename -
+```
