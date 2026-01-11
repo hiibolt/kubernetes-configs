@@ -33,6 +33,50 @@ echo "$argocd_config" | kubectl apply --filename -
 ```
 
 ## Setting up Cilium
+On your host machine, the one where you will be issuing commands from, you'll want to make a patch.yaml:
+```bash
+cluster:
+  network:
+    cni:
+      name: none
+  proxy:
+    disabled: true
+```
+
+You'll also want to define a few convenience variables:
+```bash
+export CONTROL_PLANE_IP="10.0.0.73"
+export TALOS_API_PORT="6443"
+export CLUSTER_NAME="makko"
+```
+
+Next, we'll generate and apply the config (the second command should take a few minutes, monitor the machine's progress before moving on ^^):
+```bash
+talosctl gen config "${CLUSTER_NAME}" "https://${TALOS_IP}:${TALOS_API_PORT}" --config-patch @patch.yaml
+talosctl apply-config --insecure -n "${CONTROL_PLANE_IP}" --file controlplane.yaml
+```
+
+After completion, we'll bootstrap the cluster and `kubeconfig`:
+```bash
+talosctl bootstrap --nodes "${CONTROL_PLANE_IP}" --endpoints "${CONTROL_PLANE_IP}" --talosconfig=./talosconfig
+talosctl kubeconfig --nodes "${CONTROL_PLANE_IP}" --endpoints "${CONTROL_PLANE_IP}" --talosconfig=./talosconfig
+```
+
+Then, we'll install apply Cilium's configs:
+```bash
+kubectl create namespace certificate
+
+helm repo add cilium https://helm.cilium.io/
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml \
+  -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml \
+  -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml \
+  -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/experimental/gateway.networking.k8s.io_gateways.yaml \
+  -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml \
+  -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/experimental/gateway.networking.k8s.io_grpcroutes.yaml
+```
+
+...and lastly, apply the Cilium `Application` config:
 ```bash
 export cilium_applicationyaml=$(curl -sL "https://raw.githubusercontent.com/hiibolt/kubernetes-configs/refs/heads/main/nuclearbomb/kube-system/cilium/application.yaml" | yq eval-all '. | select(.metadata.name == "cilium-application" and .kind == "Application")' -)
 export cilium_name=$(echo "$cilium_applicationyaml" | yq eval '.metadata.name' -)
@@ -42,5 +86,5 @@ export cilium_namespace=$(echo "$cilium_applicationyaml" | yq eval '.spec.destin
 export cilium_version=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.targetRevision' -)
 export cilium_values=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.helm.valuesObject' -)
 
-echo "$cilium_values" | helm template $cilium_name $cilium_chart --repo $cilium_repo --version $cilium_version --namespace $cilium_namespace --values - | kubectl apply --namespace $cilium_namespace --filename -
+echo "$cilium_values" | helm template $cilium_name $cilium_chart --repo $cilium_repo --version $cilium_version --namespace $cilium_namespace --values - | kubectl apply --filename -
 ```
