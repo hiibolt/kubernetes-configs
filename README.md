@@ -52,7 +52,7 @@ export CLUSTER_NAME="makko"
 
 Next, we'll generate and apply the config (the second command should take a few minutes, monitor the machine's progress before moving on ^^):
 ```bash
-talosctl gen config "${CLUSTER_NAME}" "https://${TALOS_IP}:${TALOS_API_PORT}" --config-patch @patch.yaml
+talosctl gen config "${CLUSTER_NAME}" "https://${CONTROL_PLANE_IP}:${TALOS_API_PORT}" --config-patch @patch.yaml
 talosctl apply-config --insecure -n "${CONTROL_PLANE_IP}" --file controlplane.yaml
 ```
 
