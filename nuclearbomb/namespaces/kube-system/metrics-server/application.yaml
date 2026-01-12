@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     chart: metrics-server
-    targetRevision: 0.8.0
+    targetRevision: 3.13.0
     repoURL: https://kubernetes-sigs.github.io/metrics-server
     helm:
       releaseName: metrics-server
@@ -20,7 +20,6 @@ spec:
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true 
     automated:
       prune: true
       selfHeal: true
