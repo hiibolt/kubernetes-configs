@@ -19,7 +19,8 @@ spec:
     namespace: external-secrets
   syncPolicy:
     syncOptions:
-      - CreateNamespace=true  # This replaces --create-namespace
+      - CreateNamespace=true
+      - ServerSideApply=true 
     automated:
       prune: true
       selfHeal: true
