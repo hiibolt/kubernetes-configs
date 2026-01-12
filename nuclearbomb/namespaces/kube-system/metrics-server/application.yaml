@@ -11,9 +11,6 @@ spec:
     repoURL: https://kubernetes-sigs.github.io/metrics-server
     helm:
       releaseName: metrics-server
-      parameters:
-        - name: installCRDs
-          value: "true"
   destination:
     server: "https://kubernetes.default.svc"
     namespace: metrics-server
