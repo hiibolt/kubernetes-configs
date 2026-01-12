@@ -11,3 +11,18 @@ spec:
     port: 3000
     targetPort: 3000
   type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: personal-site-lb
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: personal-site
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+      protocol: TCP

@@ -23,7 +23,7 @@ spec:
         name: personal-site
         ports:
         - containerPort: 3000 
-          protocol: TCP        
+          protocol: TCP
         resources:
           limits:
             cpu: 5m
