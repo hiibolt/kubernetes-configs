@@ -19,7 +19,7 @@ spec:
         app: jellyseerr
     spec:
       nodeSelector:
-        kubernetes.io/hostname: nuclearbombcell-1
+        kubernetes.io/hostname: talos-t0w-w04
       containers:
       - image: fallenbagel/jellyseerr:latest
         name: jellyseerr

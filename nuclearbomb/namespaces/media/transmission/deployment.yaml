@@ -18,7 +18,7 @@ spec:
         app: transmission
     spec:
       nodeSelector:
-        kubernetes.io/hostname: nuclearbombcell-1
+        kubernetes.io/hostname: talos-t0w-w04
       containers:
       - image: haugene/transmission-openvpn:5.3.2
         name: transmission
