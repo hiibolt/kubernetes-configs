@@ -15,15 +15,15 @@ spec:
           - path: nuclearbomb/namespaces/*/*
   template:
     metadata:
-      name: '{{.path.path.basename}}'
+      name: '{{.path.basename}}'
     spec:
       project: default
       source:
         repoURL: https://github.com/hiibolt/kubernetes-configs.git
-        path: '{{.path.path.path}}'
+        path: '{{.path.path}}'
         targetRevision: HEAD
       destination:
         server: "https://kubernetes.default.svc"
-        namespace: '{{index .path.path.segments 1}}'
+        namespace: '{{index .path.segments 2}}'
       syncPolicy: 
         automated: null
