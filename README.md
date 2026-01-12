@@ -80,6 +80,8 @@ echo "$cilium_values" | helm template $cilium_name $cilium_chart --repo $cilium_
 
 ## Setting up ArgoCD Cyclically
 ```bash
+kubectl create namespace argocd
+
 export argocd_applicationyaml=$(curl -sL "https://raw.githubusercontent.com/hiibolt/kubernetes-configs/refs/heads/main/nuclearbomb/argocd/argocd/application.yaml" | yq eval-all '. | select(.metadata.name == "argocd-application" and .kind == "Application")' -)
 export argocd_name=$(echo "$argocd_applicationyaml" | yq eval '.metadata.name' -)
 export argocd_chart=$(echo "$argocd_applicationyaml" | yq eval '.spec.source.chart' -)
