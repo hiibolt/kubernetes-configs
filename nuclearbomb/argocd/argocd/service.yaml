@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-application-server-lb
+  namespace: argocd
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/instance: argocd-application
+    app.kubernetes.io/name: argocd-server
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/instance: argocd-application
+    app.kubernetes.io/name: argocd-server
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 8080
+      protocol: TCP
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilyPolicy: SingleStack
+  ipFamilies:
+    - IPv4
