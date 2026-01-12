@@ -32,6 +32,12 @@ echo "$argocd_values" | helm template $argocd_name $argocd_chart --repo $argocd_
 echo "$argocd_config" | kubectl apply --filename -
 ```
 
+## Notes on Talosctl
+You can set up endpoints in your `talosconfig` file with the following:
+```bash
+talosctl --talosconfig=./talosconfig config endpoints $CONTROL_PLANE_IP
+```
+
 ## Setting up Cilium
 On your host machine, the one where you will be issuing commands from, you'll want to make a patch.yaml:
 ```bash
