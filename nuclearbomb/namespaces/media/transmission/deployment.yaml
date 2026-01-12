@@ -22,9 +22,6 @@ spec:
       containers:
       - image: haugene/transmission-openvpn:5.3.2
         name: transmission
-        envFrom:
-        - configMapRef:
-            name: transmission
         volumeMounts:
         - name: data
           mountPath: /data
