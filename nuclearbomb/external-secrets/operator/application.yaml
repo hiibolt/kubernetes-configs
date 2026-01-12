@@ -11,6 +11,9 @@ spec:
     targetRevision: 1.18.1
     helm:
       releaseName: external-secrets
+      parameters:
+        - name: installCRDs
+          value: "true"
   destination:
     server: "https://kubernetes.default.svc"
     namespace: external-secrets
