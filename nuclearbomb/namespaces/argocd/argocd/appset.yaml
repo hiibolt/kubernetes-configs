@@ -12,7 +12,7 @@ spec:
         repoURL: https://github.com/hiibolt/kubernetes-configs.git
         revision: HEAD
         directories:
-          - path: nuclearbomb/*/*
+          - path: nuclearbomb/namespaces/*/*
   template:
     metadata:
       name: '{{.path.basename}}'
