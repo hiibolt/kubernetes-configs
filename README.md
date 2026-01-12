@@ -65,7 +65,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v
   -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/experimental/gateway.networking.k8s.io_grpcroutes.yaml
 ```
 
-...and lastly, apply the Cilium `Application` config:
+Then, apply the Cilium `Application` config:
 ```bash
 export cilium_applicationyaml=$(curl -sL "https://raw.githubusercontent.com/hiibolt/kubernetes-configs/refs/heads/main/nuclearbomb/kube-system/cilium/application.yaml" | yq eval-all '. | select(.metadata.name == "cilium-application" and .kind == "Application")' -)
 export cilium_name=$(echo "$cilium_applicationyaml" | yq eval '.metadata.name' -)
@@ -76,6 +76,11 @@ export cilium_version=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.t
 export cilium_values=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.helm.valuesObject' -)
 
 echo "$cilium_values" | helm template $cilium_name $cilium_chart --repo $cilium_repo --version $cilium_version --namespace $cilium_namespace --values - | kubectl apply --filename -
+```
+
+...lastly, set up the other CRDs - namely, the IP pool for Cilium to allocate from:
+```bash
+kubectl apply -f nuclearbomb/kube-system/cilium/crd.yaml
 ```
 
 ## Setting up ArgoCD Cyclically
@@ -95,3 +100,5 @@ echo "$argocd_values" | helm template $argocd_name $argocd_chart --repo $argocd_
 
 echo "$argocd_config" | kubectl apply --filename -
 ```
+
+At least initially, you'll also need 
