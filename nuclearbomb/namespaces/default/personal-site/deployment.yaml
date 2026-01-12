@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: personal-site
+  namespace: default
+  labels:
+    app: personal-site
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: personal-site
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: personal-site
+    spec:
+      containers:
+      - image: ghcr.io/hiibolt/personal-site:latest
+        name: personal-site
+        ports:
+        - containerPort: 3000 
+          protocol: TCP        
+        resources:
+          limits:
+            cpu: 5m
+            memory: 64Mi
+          requests:
+            cpu: 2m
+            memory: 32Mi
