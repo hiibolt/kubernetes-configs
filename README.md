@@ -58,14 +58,14 @@ export CLUSTER_NAME="makko"
 
 Next, we'll generate and apply the config (the second command should take a few minutes, monitor the machine's progress before moving on ^^):
 ```bash
-talosctl gen config "${CLUSTER_NAME}" "https://${TALOS_IP}:${TALOS_API_PORT}" --config-patch @patch.yaml
-talosctl apply-config --insecure -n "${TALOS_IP}" --file controlplane.yaml
+talosctl gen config "$CLUSTER_NAME" "https://$TALOS_IP:$TALOS_API_PORT" --config-patch @patch.yaml
+talosctl apply-config --insecure -n "$TALOS_IP" --file controlplane.yaml
 ```
 
 After completion, we'll bootstrap the cluster and `kubeconfig`:
 ```bash
-talosctl bootstrap --nodes "${TALOS_IP}" --endpoints "${TALOS_IP}" --talosconfig=./talosconfig
-talosctl kubeconfig --nodes "${TALOS_IP}" --endpoints "${TALOS_IP}" --talosconfig=./talosconfig
+talosctl bootstrap --nodes "$TALOS_IP" --endpoints "$TALOS_IP" --talosconfig=./talosconfig
+talosctl kubeconfig --nodes "$TALOS_IP" --endpoints "$TALOS_IP" --talosconfig=./talosconfig
 ```
 
 Then, we'll install apply Cilium's configs:
