@@ -11,6 +11,9 @@ spec:
     repoURL: https://kubernetes-sigs.github.io/metrics-server
     helm:
       releaseName: metrics-server
+      parameters:
+        - name: args[0]
+          value: "--kubelet-insecure-tls"
   destination:
     server: "https://kubernetes.default.svc"
     namespace: metrics-server
