@@ -55,5 +55,5 @@ spec:
       - name: transmission
         nfs:
             server: 192.168.1.203
-            path: /mnt/meow/data/transmission/cache
+            path: /mnt/meow/transmission/cache
             readOnly: false
