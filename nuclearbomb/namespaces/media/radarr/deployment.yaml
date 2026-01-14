@@ -28,6 +28,8 @@ spec:
           mountPath: /config
         - name: movies
           mountPath: /movies
+        - name: transmission
+          mountPath: /data
         ports:
         - containerPort: 7878
           protocol: TCP

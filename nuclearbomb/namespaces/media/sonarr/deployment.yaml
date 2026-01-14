@@ -28,6 +28,8 @@ spec:
           mountPath: /config
         - name: tv
           mountPath: /tv
+        - name: transmission
+          mountPath: /data
         ports:
         - containerPort: 8989
           protocol: TCP
