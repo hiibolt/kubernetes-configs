@@ -36,7 +36,7 @@ export TALOS_API_PORT="6443"
 export CLUSTER_NAME="makko"
 ```
 
-Next, we'll generate and apply the config (the second command should take a few minutes, monitor the machine's progress before moving on ^^):
+Next, we'll generate and apply the config. Note that the second command should take a few minutes, monitor the machine's progress before moving on.
 ```bash
 talosctl gen config "$CLUSTER_NAME" "https://$TALOS_IP:$TALOS_API_PORT" --config-patch @patch.yaml
 talosctl apply-config --insecure -n "$TALOS_IP" --file controlplane.yaml
@@ -123,7 +123,7 @@ argocd admin initial-password -n argocd
 ```
 
 ## Setting up External Secrets with Vaultwarden
-Firstly, sync Vaultwarden, then the `external-secrets` namespace and Helm chart via ArgoCD (takes a sec ^^)
+Firstly, sync Vaultwarden, then the `external-secrets` namespace and Helm chart via ArgoCD - takes a sec ^^
 
 Switch to the namespace and create a (temporary) secret for `bitwarden-cli`. This is necessary because by default it's self-referential and fails.
 ```bash
