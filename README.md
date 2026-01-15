@@ -53,6 +53,12 @@ You can set up endpoints in your `talosconfig` file with the following:
 talosctl --talosconfig=./talosconfig config endpoints $CONTROL_PLANE_IP
 ```
 
+Lastly, tack on your remaining worker nodes too:
+```bash
+talosctl apply-config --insecure -n "<control_plane_ip>" --file controlplane.yaml
+talosctl apply-config --insecure -n "<worker_ip>" --file worker.yaml
+```
+
 Then, we'll install apply Cilium's configs:
 ```bash
 kubectl create namespace certificate
