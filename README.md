@@ -19,16 +19,6 @@ A collection of my cluster configuration spread:
 - **AdGuard** - DNS-level ad filtering and rewrites for all local deployments
 
 ## Setting up Cilium
-On your host machine, the one where you will be issuing commands from, you'll want to make a patch.yaml:
-```bash
-cluster:
-  network:
-    cni:
-      name: none
-  proxy:
-    disabled: true
-```
-
 You'll also want to define a few convenience variables:
 ```bash
 export TALOS_IP="10.0.0.73"
@@ -38,6 +28,7 @@ export CLUSTER_NAME="makko"
 
 Next, we'll generate and apply the config. Note that the second command should take a few minutes, monitor the machine's progress before moving on.
 ```bash
+cd nuclearbomb/talos
 talosctl gen config "$CLUSTER_NAME" "https://$TALOS_IP:$TALOS_API_PORT" --config-patch @patch.yaml
 talosctl apply-config --insecure -n "$TALOS_IP" --file controlplane.yaml
 ```
