@@ -13,7 +13,6 @@ A collection of my cluster configuration spread:
 - **[`mbo`](https://github.com/hiibolt/mbo)** - Mock Trading Monitor built with Databento ([Live Deployment](https://mbo.hiibolt.com))
 - **[`socials`](https://github.com/hiibolt/socials)** - Links to my socials ([Live Deployment](https://socials.hiibolt.com))
 - **[`personal-site`](https://github.com/hiibolt/personal-site)** - My website and portfolio ([Live Deployment](https://hiibolt.com))
-- **Homepage** - Cluster Monitor / Homepage ([Live Deployment](https://cluster.hiibolt.com))
 - **Jellyfin Servarr Stack** - Fully automated media management pipeline
 - **Monikai** - Personal assistant capable of reading my calender and Notion to assist in daily workflows
 - **ArchiSteamfarm** - Steam platform automation
