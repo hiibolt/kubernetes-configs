@@ -94,11 +94,18 @@ export argocd_repo=$(echo "$argocd_applicationyaml" | yq eval '.spec.source.repo
 export argocd_namespace=$(echo "$argocd_applicationyaml" | yq eval '.spec.destination.namespace' -)
 export argocd_version=$(echo "$argocd_applicationyaml" | yq eval '.spec.source.targetRevision' -)
 export argocd_values=$(echo "$argocd_applicationyaml" | yq eval '.spec.source.helm.valuesObject' - | yq eval 'del(.configs.cm)' -)
-export argocd_config=$(curl -sL "https://raw.githubusercontent.com/hiibolt/kubernetes-configs/refs/heads/main/nuclearbomb/argocd/argocd/appset.yaml" | yq eval-all '. | select(.kind == "AppProject" or .kind == "ApplicationSet")' -)
+export argocd_config=$(curl -sL "https://raw.githubusercontent.com/hiibolt/kubernetes-configs/refs/heads/main/nuclearbomb/namespaces/argocd/argocd/appset.yaml" | yq eval-all '. | select(.kind == "AppProject" or .kind == "ApplicationSet")' -)
 
 echo "$argocd_values" | helm template $argocd_name $argocd_chart --repo $argocd_repo --version $argocd_version --namespace $argocd_namespace --values - | kubectl apply --namespace $argocd_namespace --filename -
 
 echo "$argocd_config" | kubectl apply --filename -
+```
+
+Then, deploy the service to log in:
+```bash
+k apply -f nuclearbomb/namespaces/argocd/argocd/service.yaml
+ksc argocd
+k get svc | grep -i 'argocd-application-server-lb'
 ```
 
 At least initially, you'll also need the starter password:
