@@ -1,3 +1,5 @@
+<img src="https://github.com/user-attachments/assets/44305f56-034b-4a3f-8720-a53f5bbc9ce8" height=230px>
+
 # `kubernetes-configs`
 A collection of my cluster configuration spread:
 - CI/CD done with ArgoCD
@@ -112,3 +114,28 @@ At least initially, you'll also need the starter password:
 ```bash
 argocd admin initial-password -n argocd
 ```
+
+## Setting up External Secrets with Vaultwarden
+Firstly, sync Vaultwarden, then the `external-secrets` namespace and Helm chart via ArgoCD (takes a sec ^^)
+
+Switch to the namespace and create a (temporary) secret for `bitwarden-cli`. This is necessary because by default it's self-referential and fails.
+```bash
+ksc external-secrets
+k create secret generic bitwarden-cli --from-literal='BW_USER=...' --from-literal='BW_PASSWORD=...'
+```
+
+Next, sync `bitwarden-cli`. It'll fail due to the external secret - delete this and the secret:
+```bash
+k delete es bitwarden-cli
+k delete secret bitwarden-cli
+```
+
+Then, re-sync the external secret via ArgoCD.
+
+## Setting up Certificates with `cert-manager`
+First, sync `certificate-namespace` and `certificate` - **give it about 5 minutes to complete the certificate challenge** ^^
+
+Then, sync `cert-manager`.
+
+## Final Sync
+Be sure to update any specific `nodeSelectors` in the `media` workspace, but otherwise, you're good to go! Well done :3
