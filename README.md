@@ -80,7 +80,7 @@ echo "$cilium_values" | helm template $cilium_name $cilium_chart --repo $cilium_
 
 ...lastly, set up the other CRDs - namely, the IP pool for Cilium to allocate from:
 ```bash
-kubectl apply -f nuclearbomb/kube-system/cilium/crd.yaml
+kubectl apply -f nuclearbomb/namespaces/kube-system/cilium/crd.yaml
 ```
 
 ## Setting up ArgoCD Cyclically
