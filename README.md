@@ -91,7 +91,8 @@ echo "$cilium_values" | helm template $cilium_name $cilium_chart --repo $cilium_
 kubectl apply -f nuclearbomb/namespaces/kube-system/cilium/crd.yaml
 ```
 
-## Setting up ArgoCD Cyclically
+## Setting up ArgoCD
+First, we'll deploy Cilium:
 ```bash
 kubectl create namespace argocd
 
