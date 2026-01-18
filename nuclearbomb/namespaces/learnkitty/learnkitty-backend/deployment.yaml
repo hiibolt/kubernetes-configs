@@ -42,10 +42,10 @@ spec:
           protocol: TCP        
         resources:
           limits:
-            cpu: 5m
+            cpu: 500m
             memory: 512Mi
             ephemeral-storage: 32Mi
           requests:
-            cpu: 2m
+            cpu: 100m
             memory: 128Mi
 
