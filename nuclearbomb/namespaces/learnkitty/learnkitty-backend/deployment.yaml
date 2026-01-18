@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: learnkitty-backend
+  namespace: default
+  labels:
+    app: learnkitty-backend
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: learnkitty-backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: learnkitty-backend
+    spec:
+      containers:
+      - image: ghcr.io/hiibolt/learnkitty-backend:latest
+        name: learnkitty-backend
+        env:
+          - name: OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: learnkitty-backend-openai-api-key
+                key: OPENAI_API_KEY
+          - name: SUPABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: learnkitty-backend-supabase-url
+                key: SUPABASE_URL
+          - name: SUPABASE_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: learnkitty-backend-supabase-api-key
+                key: SUPABASE_API_KEY
+        ports:
+        - containerPort: 3000 
+          protocol: TCP        
+        resources:
+          limits:
+            cpu: 5m
+            memory: 512Mi
+            ephemeral-storage: 32Mi
+          requests:
+            cpu: 2m
+            memory: 128Mi
+
