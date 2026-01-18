@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: learnkitty-frontend
+  namespace: learnkitty
+  labels:
+    app: learnkitty-frontend
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: learnkitty-frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: learnkitty-frontend
+    spec:
+      containers:
+      - image: ghcr.io/hiibolt/learnkitty-frontend:latest
+        name: learnkitty-frontend
+        env:
+          - name: PUBLIC_SUPABASE_PUBLISHABLE_KEY
+            valueFrom:
+              secretKeyRef:
+                name: learnkitty-frontend-public-supabase-publishable-key
+                key: PUBLIC_SUPABASE_PUBLISHABLE_KEY
+          - name: PUBLIC_SUPABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: learnkitty-frontend-pubic-supabase-url
+                key: PUBLIC_SUPABASE_URL
+          - name: PUBLIC_API_BASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: learnkitty-frontend-public-api-base-url
+                key: PUBLIC_API_BASE_URL
+        ports:
+        - containerPort: 3000 
+          protocol: TCP        
+        resources:
+          limits:
+            cpu: 5m
+            memory: 512Mi
+            ephemeral-storage: 32Mi
+          requests:
+            cpu: 2m
+            memory: 128Mi
+
