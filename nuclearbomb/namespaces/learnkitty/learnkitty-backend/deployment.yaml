@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: learnkitty-backend
-  namespace: default
+  namespace: learnkitty
   labels:
     app: learnkitty-backend
 spec:
