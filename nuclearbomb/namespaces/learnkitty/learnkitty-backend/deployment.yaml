@@ -22,6 +22,8 @@ spec:
       - image: ghcr.io/hiibolt/learnkitty-backend:latest
         name: learnkitty-backend
         env:
+          - name: RUST_LOG
+            value: "info"
           - name: OPENAI_API_KEY
             valueFrom:
               secretKeyRef:
