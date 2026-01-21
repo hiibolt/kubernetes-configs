@@ -19,7 +19,7 @@ spec:
         app: learnkitty-frontend
     spec:
       containers:
-      - image: ghcr.io/hiibolt/learnkitty-frontend:latest
+      - image: ghcr.io/hiibolt/learnkitty-frontend:sha-56fc961
         name: learnkitty-frontend
         env:
           - name: PUBLIC_SUPABASE_PUBLISHABLE_KEY
