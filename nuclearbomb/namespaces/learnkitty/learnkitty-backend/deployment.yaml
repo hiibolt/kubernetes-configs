@@ -19,7 +19,7 @@ spec:
         app: learnkitty-backend
     spec:
       containers:
-      - image: ghcr.io/hiibolt/learnkitty-backend:latest
+      - image: ghcr.io/hiibolt/learnkitty-backend:sha-27b5d81
         name: learnkitty-backend
         env:
           - name: RUST_LOG
