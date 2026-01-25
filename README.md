@@ -21,9 +21,9 @@ A collection of my cluster configuration spread:
 ## Setting up Cilium
 You'll also want to define a few convenience variables:
 ```bash
-export TALOS_IP="10.0.0.73"
+export TALOS_IP="<control-plane-node-ip>"
 export TALOS_API_PORT="6443"
-export CLUSTER_NAME="makko"
+export CLUSTER_NAME="nuclearbombconsole"
 ```
 
 Next, we'll generate and apply the config. Note that the second command should take a few minutes, monitor the machine's progress before moving on.
