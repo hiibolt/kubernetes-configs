@@ -29,7 +29,7 @@ export CLUSTER_NAME="nuclearbombconsole"
 Next, we'll generate and apply the config. Note that the second command should take a few minutes, monitor the machine's progress before moving on.
 ```bash
 cd nuclearbomb/talos
-talosctl gen config "$CLUSTER_NAME" "https://$TALOS_IP:$TALOS_API_PORT" --config-patch @patch.yaml
+talosctl gen config "$CLUSTER_NAME" "https://$TALOS_IP:$TALOS_API_PORT" --config-patch @cilium-patch.yaml
 talosctl apply-config --insecure -n "$TALOS_IP" --file controlplane.yaml
 ```
 
