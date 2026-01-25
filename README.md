@@ -18,7 +18,7 @@ A collection of my cluster configuration spread:
 - **ArchiSteamfarm** - Steam platform automation
 - **AdGuard** - DNS-level ad filtering and rewrites for all local deployments
 
-## Setting up Cilium
+## Setting up Talos with Cilium
 You'll also want to define a few convenience variables:
 ```bash
 export TALOS_IP="<control-plane-node-ip>"
