@@ -2,7 +2,7 @@
 
 # `kubernetes-configs`
 A collection of my cluster configuration spread:
-- Automatica GitHub CI/CD via ArgoCD
+- Automatic GitHub CI/CD via ArgoCD
 - CNI with Cilium
 - Secrets Management with `external-secrets` operator, VaultWarden, and BitWarden CLI
 - Custom DNS via AdGuard
