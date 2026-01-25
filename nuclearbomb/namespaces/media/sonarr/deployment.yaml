@@ -19,7 +19,7 @@ spec:
         app: sonarr
     spec:
       nodeSelector:
-        kubernetes.io/hostname: talos-sq0-tmd
+        kubernetes.io/hostname: talos-f2v-rb7
       containers:
       - image: linuxserver/sonarr:latest
         name: sonarr
