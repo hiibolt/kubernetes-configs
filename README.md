@@ -122,7 +122,7 @@ ksc external-secrets
 k create secret generic bitwarden-cli --from-literal='BW_USER=...' --from-literal='BW_PASSWORD=...'
 ```
 
-Next, sync `bitwarden-cli`. It'll fail due to the external secret - delete this and the secret:
+Next, sync the cluster secret store, then `bitwarden-cli`. It'll fail due to the external secret - delete this and the secret:
 ```bash
 k delete es bitwarden-cli
 k delete secret bitwarden-cli
