@@ -12,7 +12,7 @@ spec:
         repoURL: https://github.com/hiibolt/kubernetes-configs.git
         revision: HEAD
         directories:
-          - path: manifests/*
+          - path: manifests/*/*
   template:
     metadata:
       name: '{{.path.basename}}'
