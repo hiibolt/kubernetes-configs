@@ -1,0 +1,3 @@
+[submodule "igait"]
+	path = nuclearbomb/namespaces/igait
+	url = https://github.com/igait-niu/igait-kubernetes-configs
