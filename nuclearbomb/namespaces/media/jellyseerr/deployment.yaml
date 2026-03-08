@@ -21,7 +21,7 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: talos-f2v-rb7
       containers:
-      - image: fallenbagel/jellyseerr:latest
+      - image: fallenbagel/jellyseerr:sha-42eec24 # https://hub.docker.com/r/fallenbagel/jellyseerr/tags
         name: jellyseerr
         volumeMounts:
         - name: config
