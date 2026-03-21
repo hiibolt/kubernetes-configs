@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debug-pod
+  namespace: debug
+  labels:
+    app: debug-pod
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debug-pod
+  template:
+    metadata:
+      labels:
+        app: debug-pod
+    spec:
+      containers:
+      - image: busybox:latest
+        name: debug
+        command: ["sleep", "infinity"]
+        volumeMounts:
+        - name: nfs-root
+          mountPath: /mnt/meow
+        resources:
+          limits:
+            memory: 128Mi
+            cpu: "0.5"
+          requests:
+            memory: 64Mi
+            cpu: "0.1"
+      volumes:
+      - name: nfs-root
+        nfs:
+            server: 192.168.1.203
+            path: /mnt/meow
+            readOnly: false
