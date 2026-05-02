@@ -1,4 +1,4 @@
-apiVersion: apps/v1 
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: adguard
@@ -19,39 +19,39 @@ spec:
         app: adguard
     spec:
       containers:
-      - image: adguard/adguardhome:v0.107.59
-        name: adguard
-        volumeMounts:
-        - name: config 
-          mountPath: /opt/adguardhome/conf
-        - name: work
-          mountPath: /opt/adguardhome/work
-        ports:
-        - containerPort: 80
-        - containerPort: 3000
-        - containerPort: 853
-        - containerPort: 443
-        - containerPort: 784
-        - containerPort: 53
-          protocol: UDP
-        - containerPort: 53
-          protocol: TCP
-        resources:
-          limits:
-            cpu: "1"
-            memory: 512Mi
-            ephemeral-storage: 128Mi
-          requests:
-            cpu: 10m
-            memory: 256Mi
+        - image: adguard/adguardhome:v0.107.59
+          name: adguard
+          volumeMounts:
+            - name: config
+              mountPath: /opt/adguardhome/conf
+            - name: work
+              mountPath: /opt/adguardhome/work
+          ports:
+            - containerPort: 80
+            - containerPort: 3000
+            - containerPort: 853
+            - containerPort: 443
+            - containerPort: 784
+            - containerPort: 53
+              protocol: UDP
+            - containerPort: 53
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "1"
+              memory: 512Mi
+              ephemeral-storage: 128Mi
+            requests:
+              cpu: 10m
+              memory: 256Mi
       volumes:
-      - name: work
-        nfs:
-          server: 192.168.1.203
-          path: /mnt/meow/adguard/work
-          readOnly: false
-      - name: config
-        nfs:
-          server: 192.168.1.203
-          path: /mnt/meow/adguard/config
-          readOnly: false
+        - name: work
+          nfs:
+            server: 192.168.4.38
+            path: /mnt/meow/adguard/work
+            readOnly: false
+        - name: config
+          nfs:
+            server: 192.168.4.38
+            path: /mnt/meow/adguard/config
+            readOnly: false

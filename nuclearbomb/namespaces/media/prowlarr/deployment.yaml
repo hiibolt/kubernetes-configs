@@ -21,25 +21,25 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: talos-f2v-rb7
       containers:
-      - image: linuxserver/prowlarr:latest
-        name: prowlarr
-        volumeMounts:
-        - name: config
-          mountPath: /config
-        ports:
-        - containerPort: 9696
-          protocol: TCP
-        resources:
-          limits:
-            cpu: 500m
-            memory: 1024Mi
-            ephemeral-storage: 1Gi
-          requests:
-            cpu: 50m
-            memory: 256Mi
+        - image: linuxserver/prowlarr:latest
+          name: prowlarr
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          ports:
+            - containerPort: 9696
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+              ephemeral-storage: 1Gi
+            requests:
+              cpu: 50m
+              memory: 256Mi
       volumes:
-      - name: config
-        nfs:
-            server: 192.168.1.203
+        - name: config
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/prowlarr/config
             readOnly: false

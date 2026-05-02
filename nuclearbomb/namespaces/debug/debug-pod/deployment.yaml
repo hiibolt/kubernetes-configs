@@ -17,22 +17,22 @@ spec:
         app: debug-pod
     spec:
       containers:
-      - image: busybox:latest
-        name: debug
-        command: ["sleep", "infinity"]
-        volumeMounts:
-        - name: nfs-root
-          mountPath: /mnt/meow
-        resources:
-          limits:
-            memory: 128Mi
-            cpu: "0.5"
-          requests:
-            memory: 64Mi
-            cpu: "0.1"
+        - image: busybox:latest
+          name: debug
+          command: ["sleep", "infinity"]
+          volumeMounts:
+            - name: nfs-root
+              mountPath: /mnt/meow
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: "0.5"
+            requests:
+              memory: 64Mi
+              cpu: "0.1"
       volumes:
-      - name: nfs-root
-        nfs:
-            server: 192.168.1.203
+        - name: nfs-root
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow
             readOnly: false

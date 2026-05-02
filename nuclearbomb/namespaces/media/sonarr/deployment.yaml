@@ -21,39 +21,39 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: talos-f2v-rb7
       containers:
-      - image: linuxserver/sonarr:latest
-        name: sonarr
-        volumeMounts:
-        - name: config
-          mountPath: /config
-        - name: tv
-          mountPath: /tv
-        - name: transmission
-          mountPath: /data
-        ports:
-        - containerPort: 8989
-          protocol: TCP
-        resources:
-          limits:
-            cpu: 500m
-            memory: 1024Mi
-            ephemeral-storage: 1Gi
-          requests:
-            cpu: 50m
-            memory: 256Mi
+        - image: linuxserver/sonarr:latest
+          name: sonarr
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: tv
+              mountPath: /tv
+            - name: transmission
+              mountPath: /data
+          ports:
+            - containerPort: 8989
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+              ephemeral-storage: 1Gi
+            requests:
+              cpu: 50m
+              memory: 256Mi
       volumes:
-      - name: config
-        nfs:
-            server: 192.168.1.203
+        - name: config
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/sonarr/config
             readOnly: false
-      - name: tv
-        nfs:
-            server: 192.168.1.203
+        - name: tv
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/media/tv
             readOnly: false
-      - name: transmission
-        nfs:
-            server: 192.168.1.203
+        - name: transmission
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/transmission/cache
             readOnly: false

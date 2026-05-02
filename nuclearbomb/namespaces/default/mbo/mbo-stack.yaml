@@ -29,45 +29,45 @@ spec:
         component: backend
     spec:
       containers:
-      - name: mbo-backend
-        image: ghcr.io/hiibolt/mbo-backend:latest
-        ports:
-        - containerPort: 3000
-          protocol: TCP
-        env:
-        - name: BIND_ADDRESS
-          value: "0.0.0.0:3000"
-        - name: DB_PATH
-          value: "/app/data/mbo.db"
-        - name: DBN_FILE_PATH
-          value: "/app/assets/CLX5_mbo.dbn"
-        - name: ZIP_FILE_PATH
-          value: "/app/data/feed.zip"
-        - name: SNAPSHOTS_FILE_PATH
-          value: "/app/data/snapshots"
-        - name: DBN_KEY
-          valueFrom:
-            secretKeyRef:
-              name: mbo-secrets
-              key: dbn-key
-        - name: RUST_LOG
-          value: "info"
-        volumeMounts:
-        - name: mbo-db-data
-          mountPath: /app/data
-        resources:
-          limits:
-            cpu: 300m
-            memory: 4Gi
-          requests:
-            cpu: 100m
-            memory: 2Gi
+        - name: mbo-backend
+          image: ghcr.io/hiibolt/mbo-backend:latest
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: BIND_ADDRESS
+              value: "0.0.0.0:3000"
+            - name: DB_PATH
+              value: "/app/data/mbo.db"
+            - name: DBN_FILE_PATH
+              value: "/app/assets/CLX5_mbo.dbn"
+            - name: ZIP_FILE_PATH
+              value: "/app/data/feed.zip"
+            - name: SNAPSHOTS_FILE_PATH
+              value: "/app/data/snapshots"
+            - name: DBN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mbo-secrets
+                  key: dbn-key
+            - name: RUST_LOG
+              value: "info"
+          volumeMounts:
+            - name: mbo-db-data
+              mountPath: /app/data
+          resources:
+            limits:
+              cpu: 300m
+              memory: 4Gi
+            requests:
+              cpu: 100m
+              memory: 2Gi
       volumes:
-      - name: mbo-db-data
-        nfs:
-          server: 192.168.1.203
-          path: /mnt/meow/mbo/data
-          readOnly: false
+        - name: mbo-db-data
+          nfs:
+            server: 192.168.4.38
+            path: /mnt/meow/mbo/data
+            readOnly: false
 
 ---
 # ----------------------------------------------------------------------------
@@ -96,18 +96,18 @@ spec:
         component: frontend
     spec:
       containers:
-      - name: mbo-frontend
-        image: ghcr.io/hiibolt/mbo-frontend:latest
-        ports:
-        - containerPort: 80
-          protocol: TCP
-        resources:
-          limits:
-            cpu: 5m
-            memory: 64Mi
-          requests:
-            cpu: 2m
-            memory: 16Mi
+        - name: mbo-frontend
+          image: ghcr.io/hiibolt/mbo-frontend:latest
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 5m
+              memory: 64Mi
+            requests:
+              cpu: 2m
+              memory: 16Mi
 
 ---
 # ----------------------------------------------------------------------------
@@ -136,34 +136,34 @@ spec:
         component: proxy
     spec:
       containers:
-      - name: nginx
-        image: nginx:alpine
-        ports:
-        - containerPort: 80
-          protocol: TCP
-        volumeMounts:
-        - name: nginx-config
-          mountPath: /etc/nginx/nginx.conf
-          subPath: nginx.conf
-          readOnly: true
-        resources:
-          limits:
-            cpu: 25m
-            memory: 256Mi
-          requests:
-            cpu: 5m
-            memory: 64Mi
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 30
-          timeoutSeconds: 3
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+          resources:
+            limits:
+              cpu: 25m
+              memory: 256Mi
+            requests:
+              cpu: 5m
+              memory: 64Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 30
+            timeoutSeconds: 3
       volumes:
-      - name: nginx-config
-        configMap:
-          name: mbo-nginx-config
+        - name: nginx-config
+          configMap:
+            name: mbo-nginx-config
 
 ---
 # ----------------------------------------------------------------------------
@@ -191,53 +191,53 @@ spec:
         component: monitoring
     spec:
       containers:
-      - name: prometheus
-        image: prom/prometheus:latest
-        args:
-          - '--config.file=/etc/prometheus/prometheus.yml'
-          - '--storage.tsdb.path=/prometheus'
-          - '--storage.tsdb.retention.time=30d'
-          - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-          - '--web.console.templates=/usr/share/prometheus/consoles'
-        ports:
-        - containerPort: 9090
-          protocol: TCP
-        volumeMounts:
-        - name: prometheus-config
-          mountPath: /etc/prometheus
-          readOnly: true
-        - name: prometheus-data
-          mountPath: /prometheus
-        resources:
-          limits:
-            cpu: 100m
-            memory: 1Gi
-          requests:
-            cpu: 10m
-            memory: 256Mi
-        livenessProbe:
-          httpGet:
-            path: /-/healthy
-            port: 9090
-          initialDelaySeconds: 10
-          periodSeconds: 30
-          timeoutSeconds: 3
-        readinessProbe:
-          httpGet:
-            path: /-/ready
-            port: 9090
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 3
+        - name: prometheus
+          image: prom/prometheus:latest
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            - "--storage.tsdb.retention.time=30d"
+            - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+            - "--web.console.templates=/usr/share/prometheus/consoles"
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+              readOnly: true
+            - name: prometheus-data
+              mountPath: /prometheus
+          resources:
+            limits:
+              cpu: 100m
+              memory: 1Gi
+            requests:
+              cpu: 10m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
       volumes:
-      - name: prometheus-config
-        configMap:
-          name: prometheus-config
-      - name: prometheus-data
-        nfs:
-          server: 192.168.1.203
-          path: /mnt/meow/mbo/prometheus
-          readOnly: false
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+        - name: prometheus-data
+          nfs:
+            server: 192.168.4.38
+            path: /mnt/meow/mbo/prometheus
+            readOnly: false
 
 ---
 # ----------------------------------------------------------------------------
@@ -265,73 +265,73 @@ spec:
         component: monitoring
     spec:
       containers:
-      - name: grafana
-        image: grafana/grafana:latest
-        ports:
-        - containerPort: 3000
-          protocol: TCP
-        env:
-        - name: GF_SECURITY_ADMIN_USER
-          value: "admin"
-        - name: GF_SECURITY_ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mbo-secrets
-              key: grafana-password
-        - name: GF_USERS_ALLOW_SIGN_UP
-          value: "false"
-        - name: GF_SERVER_ROOT_URL
-          value: "https://mbo-grafana.hiibolt.com"
-        - name: GF_INSTALL_PLUGINS
-          value: ""
-        volumeMounts:
-        - name: grafana-data
-          mountPath: /var/lib/grafana
-        - name: grafana-datasources
-          mountPath: /etc/grafana/provisioning/datasources
-          readOnly: true
-        - name: grafana-dashboards-config
-          mountPath: /etc/grafana/provisioning/dashboards
-          readOnly: true
-        - name: grafana-dashboards
-          mountPath: /var/lib/grafana/dashboards
-          readOnly: true
-        resources:
-          limits:
-            cpu: 200m
-            memory: 512Mi
-          requests:
-            cpu: 20m
-            memory: 256Mi
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: 3000
-          initialDelaySeconds: 10
-          periodSeconds: 30
-          timeoutSeconds: 3
-        readinessProbe:
-          httpGet:
-            path: /api/health
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 3
+        - name: grafana
+          image: grafana/grafana:latest
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: "admin"
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mbo-secrets
+                  key: grafana-password
+            - name: GF_USERS_ALLOW_SIGN_UP
+              value: "false"
+            - name: GF_SERVER_ROOT_URL
+              value: "https://mbo-grafana.hiibolt.com"
+            - name: GF_INSTALL_PLUGINS
+              value: ""
+          volumeMounts:
+            - name: grafana-data
+              mountPath: /var/lib/grafana
+            - name: grafana-datasources
+              mountPath: /etc/grafana/provisioning/datasources
+              readOnly: true
+            - name: grafana-dashboards-config
+              mountPath: /etc/grafana/provisioning/dashboards
+              readOnly: true
+            - name: grafana-dashboards
+              mountPath: /var/lib/grafana/dashboards
+              readOnly: true
+          resources:
+            limits:
+              cpu: 200m
+              memory: 512Mi
+            requests:
+              cpu: 20m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
       volumes:
-      - name: grafana-data
-        nfs:
-          server: 192.168.1.203
-          path: /mnt/meow/mbo/grafana
-          readOnly: false
-      - name: grafana-datasources
-        configMap:
-          name: grafana-datasources
-      - name: grafana-dashboards-config
-        configMap:
-          name: grafana-dashboards-config
-      - name: grafana-dashboards
-        configMap:
-          name: grafana-dashboard-mbo
+        - name: grafana-data
+          nfs:
+            server: 192.168.4.38
+            path: /mnt/meow/mbo/grafana
+            readOnly: false
+        - name: grafana-datasources
+          configMap:
+            name: grafana-datasources
+        - name: grafana-dashboards-config
+          configMap:
+            name: grafana-dashboards-config
+        - name: grafana-dashboards
+          configMap:
+            name: grafana-dashboard-mbo
 
 ---
 # ============================================================================
@@ -353,9 +353,9 @@ spec:
   selector:
     app: mbo-backend
   ports:
-  - protocol: TCP
-    port: 3000
-    targetPort: 3000
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
   type: ClusterIP
 
 ---
@@ -374,9 +374,9 @@ spec:
   selector:
     app: mbo-frontend
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
+    - protocol: TCP
+      port: 80
+      targetPort: 80
   type: ClusterIP
 
 ---
@@ -395,9 +395,9 @@ spec:
   selector:
     app: mbo-reverse-proxy
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
+    - protocol: TCP
+      port: 80
+      targetPort: 80
   type: ClusterIP
 
 ---
@@ -416,10 +416,10 @@ spec:
   selector:
     app: mbo-prometheus
   ports:
-  - name: http
-    protocol: TCP
-    port: 9090
-    targetPort: 9090
+    - name: http
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
   type: ClusterIP
 
 ---
@@ -438,10 +438,10 @@ spec:
   selector:
     app: mbo-grafana
   ports:
-  - name: http
-    protocol: TCP
-    port: 3000
-    targetPort: 3000
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
   type: ClusterIP
 
 ---

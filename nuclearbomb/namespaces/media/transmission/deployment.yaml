@@ -20,46 +20,46 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: talos-f2v-rb7
       containers:
-      - image: haugene/transmission-openvpn:5.3.2
-        name: transmission
-        securityContext:
-          capabilities:
-            add:
-              - NET_ADMIN
-        env:
-        - name: OPENVPN_PROVIDER
-          value: NORDVPN
-        - name: OPENVPN_CONFIG
-          value: "us9364.nordvpn.com.udp"
-        - name: OPENVPN_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: nordvpn-username
-              key: NORDVPN_USERNAME
-        - name: OPENVPN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: nordvpn-password
-              key: NORDVPN_PASSWORD
-        - name: LOCAL_NETWORK
-          value: "10.244.0.0/16,192.168.1.0/24"
-        volumeMounts:
-        - name: data
-          mountPath: /data
-        ports:
-        - containerPort: 9091
-        resources:
-          limits:
-            memory: 512Mi
-            ephemeral-storage: 1Gi
-            cpu: "3"
-          requests:
-            cpu: 500m
-            memory: 64Mi
+        - image: haugene/transmission-openvpn:5.3.2
+          name: transmission
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          env:
+            - name: OPENVPN_PROVIDER
+              value: NORDVPN
+            - name: OPENVPN_CONFIG
+              value: "us9364.nordvpn.com.udp"
+            - name: OPENVPN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: nordvpn-username
+                  key: NORDVPN_USERNAME
+            - name: OPENVPN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nordvpn-password
+                  key: NORDVPN_PASSWORD
+            - name: LOCAL_NETWORK
+              value: "10.244.0.0/16,192.168.1.0/24"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          ports:
+            - containerPort: 9091
+          resources:
+            limits:
+              memory: 512Mi
+              ephemeral-storage: 1Gi
+              cpu: "3"
+            requests:
+              cpu: 500m
+              memory: 64Mi
       volumes:
-      - name: data
-        nfs:
-            server: 192.168.1.203
+        - name: data
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/transmission/cache
             readOnly: false
       securityContext:

@@ -130,6 +130,23 @@ k delete secret bitwarden-cli
 
 Then, re-sync the external secret via ArgoCD.
 
+## Troubleshooting: External Secrets Failing Cluster-Wide
+If all external secrets are failing to sync, it's likely that the `bitwarden-cli` pod has restarted and can't come back up due to its circular dependency (it needs its own secret to start, but that secret is managed by itself).
+
+To fix this, re-run the bootstrap process:
+```bash
+ksc external-secrets
+k create secret generic bitwarden-cli --from-literal='BW_USER=...' --from-literal='BW_PASSWORD=...'
+```
+
+Once the `bitwarden-cli` pod is running again, clean up so the ExternalSecret operator can take back ownership:
+```bash
+k delete es bitwarden-cli
+k delete secret bitwarden-cli
+```
+
+Then re-sync the `bitwarden-cli` ExternalSecret via ArgoCD. All other secrets should recover within their 5-minute refresh interval.
+
 ## Setting up Certificates with `cert-manager`
 First, sync `certificate-namespace` and `certificate` - **give it about 5 minutes to complete the certificate challenge** ^^
 

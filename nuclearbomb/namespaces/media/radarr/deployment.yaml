@@ -21,39 +21,39 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: talos-f2v-rb7
       containers:
-      - image: linuxserver/radarr:latest
-        name: radarr
-        volumeMounts:
-        - name: config
-          mountPath: /config
-        - name: movies
-          mountPath: /movies
-        - name: transmission
-          mountPath: /data
-        ports:
-        - containerPort: 7878
-          protocol: TCP
-        resources:
-          limits:
-            cpu: 500m
-            memory: 1024Mi
-            ephemeral-storage: 1Gi
-          requests:
-            cpu: 50m
-            memory: 256Mi
+        - image: linuxserver/radarr:latest
+          name: radarr
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: movies
+              mountPath: /movies
+            - name: transmission
+              mountPath: /data
+          ports:
+            - containerPort: 7878
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+              ephemeral-storage: 1Gi
+            requests:
+              cpu: 50m
+              memory: 256Mi
       volumes:
-      - name: config
-        nfs:
-            server: 192.168.1.203
+        - name: config
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/radarr/config
             readOnly: false
-      - name: movies
-        nfs:
-            server: 192.168.1.203
+        - name: movies
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/media/movies
             readOnly: false
-      - name: transmission
-        nfs:
-            server: 192.168.1.203
+        - name: transmission
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/transmission/cache
             readOnly: false

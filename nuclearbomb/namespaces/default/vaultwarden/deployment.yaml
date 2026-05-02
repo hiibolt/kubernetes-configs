@@ -19,27 +19,27 @@ spec:
         app: vaultwarden
     spec:
       containers:
-      - image: vaultwarden/server:latest
-        name: vaultwarden
-        volumeMounts:
-        - name: data
-          mountPath: /data
-        ports:
-        - containerPort: 80
-        env:
-        - name: DOMAIN
-          value: "https://vw.hiibolt.com"
-        resources:
-          limits:
-            cpu: 250m
-            memory: 256Mi
-            ephemeral-storage: 128Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
+        - image: vaultwarden/server:latest
+          name: vaultwarden
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          ports:
+            - containerPort: 80
+          env:
+            - name: DOMAIN
+              value: "https://vw.hiibolt.com"
+          resources:
+            limits:
+              cpu: 250m
+              memory: 256Mi
+              ephemeral-storage: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
       volumes:
-      - name: data
-        nfs:
-            server: 192.168.1.203
+        - name: data
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/vaultwarden/data
             readOnly: false

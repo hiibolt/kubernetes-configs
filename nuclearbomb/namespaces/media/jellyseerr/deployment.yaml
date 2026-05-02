@@ -21,25 +21,25 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: talos-f2v-rb7
       containers:
-      - image: fallenbagel/jellyseerr:sha-42eec24 # https://hub.docker.com/r/fallenbagel/jellyseerr/tags
-        name: jellyseerr
-        volumeMounts:
-        - name: config
-          mountPath: /app/config
-        ports:
-        - containerPort: 5055
-          protocol: TCP
-        resources:
-          limits:
-            memory: 2048Mi
-            ephemeral-storage: 1Gi
-            cpu: "4"
-          requests:
-            cpu: 150m
-            memory: 1024Mi
+        - image: fallenbagel/jellyseerr:sha-42eec24 # https://hub.docker.com/r/fallenbagel/jellyseerr/tags
+          name: jellyseerr
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+          ports:
+            - containerPort: 5055
+              protocol: TCP
+          resources:
+            limits:
+              memory: 2048Mi
+              ephemeral-storage: 1Gi
+              cpu: "4"
+            requests:
+              cpu: 150m
+              memory: 1024Mi
       volumes:
-      - name: config
-        nfs:
-            server: 192.168.1.203
+        - name: config
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/jellyseerr/config
             readOnly: false

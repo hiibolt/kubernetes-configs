@@ -19,75 +19,80 @@ spec:
         app: jellyfin
     spec:
       initContainers:
-      - name: db-init
-        image: busybox:latest
-        command: ["sh", "-c", "cp -a /nfs-data/. /local-data/"]
-        volumeMounts:
-        - name: nfs-data
-          mountPath: /nfs-data
-        - name: local-data
-          mountPath: /local-data
+        - name: db-init
+          image: busybox:latest
+          command: ["sh", "-c", "cp -a /nfs-data/. /local-data/"]
+          volumeMounts:
+            - name: nfs-data
+              mountPath: /nfs-data
+            - name: local-data
+              mountPath: /local-data
       containers:
-      - image: jellyfin/jellyfin:latest
-        name: jellyfin
-        volumeMounts:
-        - name: config
-          mountPath: /config
-        - name: local-data
-          mountPath: /config/data
-        - name: cache
-          mountPath: /cache
-        - name: media
-          mountPath: /mnt/meow/media
-        ports:
-        - containerPort: 8096
-          protocol: TCP
-        - containerPort: 7359
-          protocol: UDP
-        resources:
-          limits:
-            memory: 16192Mi
-            ephemeral-storage: 1024Mi
-            cpu: "6"
-          requests:
-            cpu: "2"
-            memory: 8096Mi
-      - name: db-backup
-        image: busybox:latest
-        command: ["sh", "-c", "while true; do sleep 300; cp /local-data/jellyfin.db /nfs-data/jellyfin.db; echo \"[$(date)] DB backed up to NFS\"; done"]
-        volumeMounts:
-        - name: nfs-data
-          mountPath: /nfs-data
-        - name: local-data
-          mountPath: /local-data
-        resources:
-          limits:
-            memory: 64Mi
-            cpu: "0.1"
-          requests:
-            memory: 32Mi
-            cpu: "0.05"
+        - image: jellyfin/jellyfin:latest
+          name: jellyfin
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: local-data
+              mountPath: /config/data
+            - name: cache
+              mountPath: /cache
+            - name: media
+              mountPath: /mnt/meow/media
+          ports:
+            - containerPort: 8096
+              protocol: TCP
+            - containerPort: 7359
+              protocol: UDP
+          resources:
+            limits:
+              memory: 16192Mi
+              ephemeral-storage: 1024Mi
+              cpu: "6"
+            requests:
+              cpu: "2"
+              memory: 8096Mi
+        - name: db-backup
+          image: busybox:latest
+          command:
+            [
+              "sh",
+              "-c",
+              'while true; do sleep 300; cp /local-data/jellyfin.db /nfs-data/jellyfin.db; echo "[$(date)] DB backed up to NFS"; done',
+            ]
+          volumeMounts:
+            - name: nfs-data
+              mountPath: /nfs-data
+            - name: local-data
+              mountPath: /local-data
+          resources:
+            limits:
+              memory: 64Mi
+              cpu: "0.1"
+            requests:
+              memory: 32Mi
+              cpu: "0.05"
       volumes:
-      - name: config
-        nfs:
-            server: 192.168.1.203
+        - name: config
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/jellyfin/config
             readOnly: false
-      - name: nfs-data
-        nfs:
-            server: 192.168.1.203
+        - name: nfs-data
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/jellyfin/config/data
             readOnly: false
-      - name: local-data
-        emptyDir:
-          sizeLimit: 512Mi
-      - name: cache
-        nfs:
-            server: 192.168.1.203
+        - name: local-data
+          emptyDir:
+            sizeLimit: 512Mi
+        - name: cache
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/jellyfin/cache
             readOnly: false
-      - name: media
-        nfs:
-            server: 192.168.1.203
+        - name: media
+          nfs:
+            server: 192.168.4.38
             path: /mnt/meow/media
             readOnly: false
