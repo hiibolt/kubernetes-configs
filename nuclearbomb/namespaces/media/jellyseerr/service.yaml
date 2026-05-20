@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: jellyseerr
   namespace: media
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/hostname: "jellyseerr"
+    tailscale.com/tags: "tag:k8s"
 spec:
   selector:
     app: jellyseerr
@@ -11,4 +15,5 @@ spec:
     port: 5055
     targetPort: 5055
     name: jellyseerr-portal
-  type: ClusterIP
+  type: LoadBalancer
+  loadBalancerClass: tailscale
