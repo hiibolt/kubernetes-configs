@@ -19,7 +19,7 @@ spec:
         app: jellyseerr
     spec:
       nodeSelector:
-        kubernetes.io/hostname: talos-f2v-rb7
+        kubernetes.io/hostname: 309c23e693a5
       containers:
         - image: fallenbagel/jellyseerr:sha-42eec24 # https://hub.docker.com/r/fallenbagel/jellyseerr/tags
           name: jellyseerr
