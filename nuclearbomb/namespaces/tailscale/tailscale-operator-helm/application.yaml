@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: tailscale-operator-helm
+  name: tailscale-helm
   namespace: argocd
 spec:
   project: default
