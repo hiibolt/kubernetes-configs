@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tailscale-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: tailscale-operator
+    targetRevision: 1.78.3
+    repoURL: https://pkgs.tailscale.com/helmcharts
+    helm:
+      releaseName: tailscale-operator
+      parameters:
+        - name: operatorConfig.hostname
+          value: nuclearbomb-operator
+        - name: operatorConfig.defaultTags
+          value: "tag:k8s"
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: tailscale
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    automated:
+      prune: true
+      selfHeal: true
