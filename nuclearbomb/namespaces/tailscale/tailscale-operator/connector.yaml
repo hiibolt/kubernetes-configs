@@ -1,0 +1,14 @@
+apiVersion: tailscale.com/v1alpha1
+kind: Connector
+metadata:
+  name: nuclearbomb-connector
+  namespace: tailscale
+spec:
+  hostname: nuclearbomb-connector
+  subnetRouter:
+    advertiseRoutes:
+      - 192.168.4.0/24
+      - 10.244.0.0/16
+      - 10.96.0.0/12
+  tags:
+    - tag:k8s
