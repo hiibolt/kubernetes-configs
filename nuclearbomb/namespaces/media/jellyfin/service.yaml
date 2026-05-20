@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: jellyfin
   namespace: media
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/hostname: "jellyfin"
+    tailscale.com/tags: "tag:k8s"
 spec:
   selector:
     app: jellyfin
@@ -15,4 +19,5 @@ spec:
     port: 7359
     targetPort: 7359
     name: jellyfin-udp
-  type: ClusterIP
+  type: LoadBalancer
+  loadBalancerClass: tailscale
