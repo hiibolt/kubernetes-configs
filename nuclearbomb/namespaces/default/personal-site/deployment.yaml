@@ -19,10 +19,10 @@ spec:
         app: personal-site
     spec:
       containers:
-      - image: ghcr.io/hiibolt/personal-site:latest
+      - image: ghcr.io/hiibolt/socials:latest
         name: personal-site
         ports:
-        - containerPort: 3000 
+        - containerPort: 4000
           protocol: TCP
         resources:
           limits:
