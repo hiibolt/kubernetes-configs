@@ -24,10 +24,15 @@ spec:
         grafana:
           enabled: true
           adminUser: admin
+          # pin this or helm regenerates a random password on every sync
+          adminPassword: Uc0V1f2kLImcHosPbHdRHIxEljL9Uh36njZGQrb0
           grafana.ini:
             server:
               root_url: https://grafana.hiibolt.com
               domain: grafana.hiibolt.com
+          persistence:
+            enabled: true
+            existingClaim: grafana-nfs
           sidecar:
             dashboards:
               enabled: true
