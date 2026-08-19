@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes
+  namespace: default
+  labels:
+    app: hermes
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hermes
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hermes
+    spec:
+      containers:
+        - name: hermes
+          image: nousresearch/hermes-agent:latest
+          args:
+            - gateway
+            - run
+          env:
+            - name: HERMES_DASHBOARD
+              value: "1"
+            - name: HERMES_DASHBOARD_HOST
+              value: "0.0.0.0"
+            - name: HERMES_DASHBOARD_PORT
+              value: "9119"
+            - name: HOME
+              value: /opt/data
+          ports:
+            - name: dashboard
+              containerPort: 9119
+            - name: a2a
+              containerPort: 9900
+            - name: a2a-sayori
+              containerPort: 9901
+            - name: api
+              containerPort: 8642
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+              ephemeral-storage: 2Gi
+      volumes:
+        - name: data
+          nfs:
+            server: 192.168.4.38
+            path: /mnt/meow/hermes
+            readOnly: false
