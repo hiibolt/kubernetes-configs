@@ -28,6 +28,12 @@ spec:
             server:
               root_url: https://grafana.hiibolt.com
               domain: grafana.hiibolt.com
+          sidecar:
+            dashboards:
+              enabled: true
+              label: grafana_dashboard
+              labelValue: "1"
+              searchNamespace: ALL
           service:
             type: ClusterIP
             port: 80
