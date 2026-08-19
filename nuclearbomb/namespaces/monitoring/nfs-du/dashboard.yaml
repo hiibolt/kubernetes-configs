@@ -34,7 +34,7 @@ data:
               "unit": "percentunit"
             }
           },
-          "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 },
+          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
           "id": 6,
           "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdMarkers": true },
           "targets": [
@@ -123,7 +123,7 @@ data:
               "unit": "bytes"
             }
           },
-          "gridPos": { "h": 10, "w": 16, "x": 0, "y": 8 },
+          "gridPos": { "h": 10, "w": 16, "x": 0, "y": 4 },
           "id": 1,
           "options": {
             "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "right", "showLegend": true },
@@ -144,7 +144,7 @@ data:
               "unit": "bytes"
             }
           },
-          "gridPos": { "h": 10, "w": 8, "x": 16, "y": 8 },
+          "gridPos": { "h": 10, "w": 8, "x": 16, "y": 4 },
           "id": 4,
           "options": {
             "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
@@ -175,7 +175,7 @@ data:
               "unit": "bytes"
             }
           },
-          "gridPos": { "h": 12, "w": 12, "x": 0, "y": 18 },
+          "gridPos": { "h": 12, "w": 12, "x": 0, "y": 14 },
           "id": 8,
           "options": {
             "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "right", "showLegend": true },
@@ -213,7 +213,7 @@ data:
               "unit": "bytes"
             }
           },
-          "gridPos": { "h": 12, "w": 12, "x": 12, "y": 18 },
+          "gridPos": { "h": 12, "w": 12, "x": 12, "y": 14 },
           "id": 9,
           "options": {
             "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "right", "showLegend": true },
@@ -238,7 +238,7 @@ data:
           "fieldConfig": {
             "defaults": { "unit": "bytes", "custom": { "align": "auto", "filterable": true } }
           },
-          "gridPos": { "h": 10, "w": 12, "x": 0, "y": 30 },
+          "gridPos": { "h": 10, "w": 12, "x": 0, "y": 26 },
           "id": 10,
           "options": { "showHeader": true, "sortBy": [{ "desc": true, "displayName": "bytes" }] },
           "targets": [
@@ -263,7 +263,7 @@ data:
           "fieldConfig": {
             "defaults": { "unit": "bytes", "custom": { "align": "auto", "filterable": true } }
           },
-          "gridPos": { "h": 10, "w": 12, "x": 12, "y": 30 },
+          "gridPos": { "h": 10, "w": 12, "x": 12, "y": 26 },
           "id": 11,
           "options": { "showHeader": true, "sortBy": [{ "desc": true, "displayName": "bytes" }] },
           "targets": [
@@ -293,5 +293,5 @@ data:
       "timezone": "browser",
       "title": "NFS /mnt/meow",
       "uid": "nfs-meow",
-      "version": 3
+      "version": 4
     }
