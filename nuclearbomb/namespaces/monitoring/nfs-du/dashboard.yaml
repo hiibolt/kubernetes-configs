@@ -20,74 +20,62 @@ data:
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
-              "color": { "mode": "palette-classic" },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 40,
-                "gradientMode": "none",
-                "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-                "insertNulls": false,
-                "lineInterpolation": "smooth",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": { "type": "linear" },
-                "showPoints": "never",
-                "spanNulls": true,
-                "stacking": { "group": "A", "mode": "normal" },
-                "thresholdsStyle": { "mode": "off" }
+              "color": { "mode": "thresholds" },
+              "max": 1,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 0.75 },
+                  { "color": "red", "value": 0.9 }
+                ]
               },
-              "unit": "bytes"
-            },
-            "overrides": []
+              "unit": "percentunit"
+            }
           },
-          "gridPos": { "h": 12, "w": 16, "x": 0, "y": 0 },
-          "id": 1,
-          "options": {
-            "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "right", "showLegend": true },
-            "tooltip": { "mode": "multi", "sort": "desc" }
-          },
+          "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 },
+          "id": 6,
+          "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "showThresholdLabels": false, "showThresholdMarkers": true },
           "targets": [
             {
-              "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "nfs_dir_bytes",
-              "legendFormat": "{{path}}",
+              "expr": "nfs_fs_used_bytes / nfs_fs_size_bytes",
+              "legendFormat": "used",
               "refId": "A"
             }
           ],
-          "title": "/mnt/meow folder sizes",
-          "type": "timeseries"
+          "title": "disk used vs size",
+          "type": "gauge"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": {
+            "defaults": { "unit": "bytes", "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] } }
+          },
+          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+          "id": 7,
+          "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] }, "textMode": "value_and_name" },
+          "targets": [
+            { "expr": "nfs_fs_used_bytes", "legendFormat": "used", "refId": "A" },
+            { "expr": "nfs_fs_size_bytes", "legendFormat": "size", "refId": "B" },
+            { "expr": "nfs_fs_avail_bytes", "legendFormat": "free", "refId": "C" }
+          ],
+          "title": "capacity",
+          "type": "stat"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
             "defaults": {
               "color": { "mode": "thresholds" },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  { "color": "green", "value": null },
-                  { "color": "yellow", "value": 600 },
-                  { "color": "red", "value": 1200 }
-                ]
-              },
+              "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 600 }, { "color": "red", "value": 1200 }] },
               "unit": "s"
             }
           },
-          "gridPos": { "h": 4, "w": 8, "x": 16, "y": 0 },
+          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
           "id": 2,
           "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
-          "targets": [
-            {
-              "expr": "nfs_dir_scan_seconds",
-              "legendFormat": "scan",
-              "refId": "A"
-            }
-          ],
+          "targets": [{ "expr": "nfs_dir_scan_seconds", "legendFormat": "scan", "refId": "A" }],
           "title": "last du walk",
           "type": "stat"
         },
@@ -102,17 +90,42 @@ data:
               "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
             }
           },
-          "gridPos": { "h": 4, "w": 8, "x": 16, "y": 4 },
+          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
           "id": 3,
           "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
-          "targets": [
-            {
-              "expr": "nfs_dir_scan_success",
-              "refId": "A"
-            }
-          ],
+          "targets": [{ "expr": "nfs_dir_scan_success", "refId": "A" }],
           "title": "scan status",
           "type": "stat"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 40,
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "showPoints": "never",
+                "spanNulls": true,
+                "stacking": { "group": "A", "mode": "normal" },
+                "scaleDistribution": { "type": "linear" }
+              },
+              "unit": "bytes"
+            }
+          },
+          "gridPos": { "h": 10, "w": 16, "x": 0, "y": 8 },
+          "id": 1,
+          "options": {
+            "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "right", "showLegend": true },
+            "tooltip": { "mode": "multi", "sort": "desc" }
+          },
+          "targets": [
+            { "expr": "nfs_dir_bytes", "legendFormat": "{{path}}", "refId": "A" }
+          ],
+          "title": "/mnt/meow folder sizes",
+          "type": "timeseries"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -123,44 +136,120 @@ data:
               "unit": "bytes"
             }
           },
-          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+          "gridPos": { "h": 10, "w": 8, "x": 16, "y": 8 },
           "id": 4,
           "options": {
             "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
             "pieType": "pie",
-            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-            "tooltip": { "mode": "single" }
+            "reduceOptions": { "calcs": ["lastNotNull"] }
           },
-          "targets": [
-            {
-              "expr": "nfs_dir_bytes",
-              "legendFormat": "{{path}}",
-              "refId": "A"
-            }
-          ],
+          "targets": [{ "expr": "nfs_dir_bytes", "legendFormat": "{{path}}", "refId": "A" }],
           "title": "share of /mnt/meow",
           "type": "piechart"
         },
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": {
-            "defaults": { "unit": "bytes", "custom": { "align": "auto", "filterable": true } }
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "drawStyle": "bars",
+                "fillOpacity": 80,
+                "lineWidth": 0,
+                "showPoints": "never",
+                "stacking": { "group": "A", "mode": "none" }
+              },
+              "unit": "bytes"
+            }
           },
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 12 },
-          "id": 5,
-          "options": { "showHeader": true, "sortBy": [{ "desc": true, "displayName": "Value" }] },
+          "gridPos": { "h": 12, "w": 12, "x": 0, "y": 18 },
+          "id": 8,
+          "options": {
+            "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "right", "showLegend": true },
+            "tooltip": { "mode": "single", "sort": "desc" }
+          },
           "targets": [
             {
-              "expr": "nfs_dir_bytes",
-              "format": "table",
-              "instant": true,
-              "legendFormat": "{{path}}",
+              "expr": "topk(20, nfs_media_item_bytes{library=\"tv\"})",
+              "legendFormat": "{{item}}",
               "refId": "A"
             }
           ],
-          "title": "current sizes",
+          "title": "media/tv (top 20 shows)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "drawStyle": "bars",
+                "fillOpacity": 80,
+                "lineWidth": 0,
+                "showPoints": "never",
+                "stacking": { "group": "A", "mode": "none" }
+              },
+              "unit": "bytes"
+            }
+          },
+          "gridPos": { "h": 12, "w": 12, "x": 12, "y": 18 },
+          "id": 9,
+          "options": {
+            "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "right", "showLegend": true },
+            "tooltip": { "mode": "single", "sort": "desc" }
+          },
+          "targets": [
+            {
+              "expr": "topk(20, nfs_media_item_bytes{library=\"movies\"})",
+              "legendFormat": "{{item}}",
+              "refId": "A"
+            }
+          ],
+          "title": "media/movies (top 20)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": {
+            "defaults": { "unit": "bytes", "custom": { "align": "auto", "filterable": true } }
+          },
+          "gridPos": { "h": 10, "w": 12, "x": 0, "y": 30 },
+          "id": 10,
+          "options": { "showHeader": true, "sortBy": [{ "desc": true, "displayName": "bytes" }] },
+          "targets": [
+            {
+              "expr": "nfs_media_item_bytes{library=\"tv\"}",
+              "format": "table",
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "all tv titles",
           "transformations": [
-            { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "namespace": true, "pod": true, "service": true, "endpoint": true, "container": true }, "renameByName": { "path": "folder", "Value": "bytes" } } }
+            { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "namespace": true, "pod": true, "service": true, "endpoint": true, "container": true, "library": true }, "renameByName": { "item": "show", "Value": "bytes" } } }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": {
+            "defaults": { "unit": "bytes", "custom": { "align": "auto", "filterable": true } }
+          },
+          "gridPos": { "h": 10, "w": 12, "x": 12, "y": 30 },
+          "id": 11,
+          "options": { "showHeader": true, "sortBy": [{ "desc": true, "displayName": "bytes" }] },
+          "targets": [
+            {
+              "expr": "nfs_media_item_bytes{library=\"movies\"}",
+              "format": "table",
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "all movies",
+          "transformations": [
+            { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true, "namespace": true, "pod": true, "service": true, "endpoint": true, "container": true, "library": true }, "renameByName": { "item": "movie", "Value": "bytes" } } }
           ],
           "type": "table"
         }
@@ -174,5 +263,5 @@ data:
       "timezone": "browser",
       "title": "NFS /mnt/meow",
       "uid": "nfs-meow",
-      "version": 1
+      "version": 2
     }

@@ -24,8 +24,66 @@ data:
         "nfs_dir_scan_success 0\n"
     )
 
+    MEDIA_LIBS = ("tv", "movies")
+
     def escape(value: str) -> str:
         return value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "")
+
+    def du_bytes(path: Path) -> int | None:
+        proc = subprocess.run(
+            ["du", "-sk", str(path)],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if proc.returncode != 0 or not proc.stdout.strip():
+            return None
+        return int(proc.stdout.split()[0]) * 1024
+
+    def scan_fs(lines: list[str]) -> None:
+        proc = subprocess.run(
+            ["df", "-kP", str(ROOT)],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        rows = [ln for ln in proc.stdout.splitlines() if ln.strip()]
+        if len(rows) < 2:
+            return
+        parts = rows[1].split()
+        # Filesystem 1K-blocks Used Available Use% Mounted
+        size_kib, used_kib, avail_kib = int(parts[1]), int(parts[2]), int(parts[3])
+        lines.extend(
+            [
+                "# HELP nfs_fs_size_bytes Filesystem capacity for the NFS mount.",
+                "# TYPE nfs_fs_size_bytes gauge",
+                f"nfs_fs_size_bytes {size_kib * 1024}",
+                "# HELP nfs_fs_used_bytes Filesystem used bytes for the NFS mount.",
+                "# TYPE nfs_fs_used_bytes gauge",
+                f"nfs_fs_used_bytes {used_kib * 1024}",
+                "# HELP nfs_fs_avail_bytes Filesystem available bytes for the NFS mount.",
+                "# TYPE nfs_fs_avail_bytes gauge",
+                f"nfs_fs_avail_bytes {avail_kib * 1024}",
+            ]
+        )
+
+    def scan_media_lib(lib: Path, lines: list[str]) -> int:
+        total = 0
+        if not lib.is_dir():
+            return 0
+        kids = sorted(
+            p for p in lib.iterdir() if p.is_dir() and not p.name.startswith(".")
+        )
+        for child in kids:
+            size = du_bytes(child)
+            if size is None:
+                continue
+            total += size
+            lines.append(
+                "nfs_media_item_bytes"
+                f'{{library="{escape(lib.name)}",item="{escape(child.name)}"}} {size}'
+            )
+        return total
 
     def scan() -> None:
         global METRICS
@@ -33,6 +91,8 @@ data:
         lines = [
             "# HELP nfs_dir_bytes Top-level NFS directory size in bytes.",
             "# TYPE nfs_dir_bytes gauge",
+            "# HELP nfs_media_item_bytes Size of a title under media/tv or media/movies.",
+            "# TYPE nfs_media_item_bytes gauge",
             "# HELP nfs_dir_scan_seconds Wall time of the last du walk.",
             "# TYPE nfs_dir_scan_seconds gauge",
             "# HELP nfs_dir_scan_success 1 if the last walk finished.",
@@ -42,21 +102,24 @@ data:
         try:
             if not ROOT.is_dir():
                 raise FileNotFoundError(ROOT)
+            scan_fs(lines)
             kids = sorted(
                 p for p in ROOT.iterdir() if p.is_dir() and not p.name.startswith(".")
             )
             for child in kids:
-                proc = subprocess.run(
-                    ["du", "-sk", str(child)],
-                    check=False,
-                    capture_output=True,
-                    text=True,
-                )
-                if proc.returncode != 0 or not proc.stdout.strip():
+                if child.name == "media":
+                    media_total = 0
+                    for lib_name in MEDIA_LIBS:
+                        media_total += scan_media_lib(child / lib_name, lines)
+                    lines.append(
+                        f'nfs_dir_bytes{{path="{escape(child.name)}"}} {media_total}'
+                    )
                     continue
-                kib = int(proc.stdout.split()[0])
+                size = du_bytes(child)
+                if size is None:
+                    continue
                 lines.append(
-                    f'nfs_dir_bytes{{path="{escape(child.name)}"}} {kib * 1024}'
+                    f'nfs_dir_bytes{{path="{escape(child.name)}"}} {size}'
                 )
         except Exception:
             ok = 0
