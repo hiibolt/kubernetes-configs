@@ -24,8 +24,12 @@ spec:
         grafana:
           enabled: true
           adminUser: admin
-          # pin this or helm regenerates a random password on every sync
-          adminPassword: Uc0V1f2kLImcHosPbHdRHIxEljL9Uh36njZGQrb0
+          # password lives in secret grafana-admin, not git. helm will
+          # mint a new one every sync if this is unset and there's no existingSecret.
+          admin:
+            existingSecret: grafana-admin
+            userKey: admin-user
+            passwordKey: admin-password
           grafana.ini:
             server:
               root_url: https://grafana.hiibolt.com
