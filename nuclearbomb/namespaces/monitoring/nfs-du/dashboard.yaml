@@ -85,9 +85,9 @@ data:
             "defaults": {
               "color": { "mode": "thresholds" },
               "mappings": [
-                { "options": { "0": { "color": "red", "index": 0, "text": "failed" }, "1": { "color": "green", "index": 1, "text": "ok" } }, "type": "value" }
+                { "options": { "0": { "color": "red", "index": 0, "text": "failed" }, "1": { "color": "green", "index": 1, "text": "ok" }, "2": { "color": "yellow", "index": 2, "text": "scanning" } }, "type": "value" }
               ],
-              "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+              "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }, { "color": "yellow", "value": 2 }] } } }
             }
           },
           "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },

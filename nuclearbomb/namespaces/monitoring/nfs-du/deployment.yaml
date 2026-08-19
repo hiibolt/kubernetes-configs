@@ -19,9 +19,9 @@ data:
     PORT = int(os.environ.get("METRICS_PORT", "9100"))
     LOCK = threading.Lock()
     METRICS = (
-        "# HELP nfs_dir_bytes Top-level NFS directory size in bytes.\n"
-        "# TYPE nfs_dir_bytes gauge\n"
-        "nfs_dir_scan_success 0\n"
+        "# HELP nfs_dir_scan_success 1 ok, 0 failed, 2 still scanning.\n"
+        "# TYPE nfs_dir_scan_success gauge\n"
+        "nfs_dir_scan_success 2\n"
     )
 
     MEDIA_LIBS = ("tv", "movies")
@@ -95,7 +95,7 @@ data:
             "# TYPE nfs_media_item_bytes gauge",
             "# HELP nfs_dir_scan_seconds Wall time of the last du walk.",
             "# TYPE nfs_dir_scan_seconds gauge",
-            "# HELP nfs_dir_scan_success 1 if the last walk finished.",
+            "# HELP nfs_dir_scan_success 1 ok, 0 failed, 2 still scanning.",
             "# TYPE nfs_dir_scan_success gauge",
         ]
         ok = 1
@@ -121,8 +121,9 @@ data:
                 lines.append(
                     f'nfs_dir_bytes{{path="{escape(child.name)}"}} {size}'
                 )
-        except Exception:
+        except Exception as exc:
             ok = 0
+            print(f"nfs-du scan failed: {exc!r}", flush=True)
         elapsed = time.time() - started
         lines.append(f"nfs_dir_scan_seconds {elapsed:.3f}")
         lines.append(f"nfs_dir_scan_success {ok}")
