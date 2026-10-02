@@ -6,8 +6,8 @@ metadata:
 data:
   SUPABASE_URL: "https://vcjpwkpsjbmcohemwjdg.supabase.co"
   SUPABASE_KEY: "sb_publishable_7-qVqUlqgcnmv8toYOlWTQ_cPa4VcmK"
-  API_URL: ""
-  WS_URL: ""
+  API_URL: "https://degine.hiibolt.com"
+  WS_URL: "wss://degine.hiibolt.com/ws"
   BACKEND_URL: "http://degine-backend:3000"
   BIND: "0.0.0.0:3000"
   pooler-root.pem: |
