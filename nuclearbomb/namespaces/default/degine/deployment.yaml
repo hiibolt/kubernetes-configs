@@ -1,0 +1,157 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: degine
+  namespace: default
+data:
+  SUPABASE_URL: "https://vcjpwkpsjbmcohemwjdg.supabase.co"
+  SUPABASE_KEY: "sb_publishable_7-qVqUlqgcnmv8toYOlWTQ_cPa4VcmK"
+  API_URL: ""
+  WS_URL: ""
+  BACKEND_URL: "http://degine-backend:3000"
+  BIND: "0.0.0.0:3000"
+  pooler-root.pem: |
+    -----BEGIN CERTIFICATE-----
+    MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
+    BQAwazELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5l
+    dyBDYXN0bGUxFTATBgNVBAoMDFN1cGFiYXNlIEluYzEeMBwGA1UEAwwVU3VwYWJh
+    c2UgUm9vdCAyMDIxIENBMB4XDTIxMDQyODEwNTY1M1oXDTMxMDQyNjEwNTY1M1ow
+    azELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5ldyBD
+    YXN0bGUxFTATBgNVBAoMDFN1cGFiYXNlIEluYzEeMBwGA1UEAwwVU3VwYWJhc2Ug
+    Um9vdCAyMDIxIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqQXW
+    QyHOB+qR2GJobCq/CBmQ40G0oDmCC3mzVnn8sv4XNeWtE5XcEL0uVih7Jo4Dkx1Q
+    DmGHBH1zDfgs2qXiLb6xpw/CKQPypZW1JssOTMIfQppNQ87K75Ya0p25Y3ePS2t2
+    GtvHxNjUV6kjOZjEn2yWEcBdpOVCUYBVFBNMB4YBHkNRDa/+S4uywAoaTWnCJLUi
+    cvTlHmMw6xSQQn1UfRQHk50DMCEJ7Cy1RxrZJrkXXRP3LqQL2ijJ6F4yMfh+Gyb4
+    O4XajoVj/+R4GwywKYrrS8PrSNtwxr5StlQO8zIQUSMiq26wM8mgELFlS/32Uclt
+    NaQ1xBRizkzpZct9DwIDAQABo2AwXjALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFKjX
+    uXY32CztkhImng4yJNUtaUYsMB8GA1UdIwQYMBaAFKjXuXY32CztkhImng4yJNUt
+    aUYsMA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAB8spzNn+4VU
+    tVxbdMaX+39Z50sc7uATmus16jmmHjhIHz+l/9GlJ5KqAMOx26mPZgfzG7oneL2b
+    VW+WgYUkTT3XEPFWnTp2RJwQao8/tYPXWEJDc0WVQHrpmnWOFKU/d3MqBgBm5y+6
+    jB81TU/RG2rVerPDWP+1MMcNNy0491CTL5XQZ7JfDJJ9CCmXSdtTl4uUQnSuv/Qx
+    Cea13BX2ZgJc7Au30vihLhub52De4P/4gonKsNHYdbWjg7OWKwNv/zitGDVDB9Y2
+    CMTyZKG3XEu5Ghl1LEnI3QmEKsqaCLv12BnVjbkSeZsMnevJPs1Ye6TjjJwdik5P
+    o/bKiIz+Fq8=
+    -----END CERTIFICATE-----
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: degine-backend
+  namespace: default
+  labels:
+    app: degine-backend
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: degine-backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: degine-backend
+    spec:
+      containers:
+        - name: degine-backend
+          image: ghcr.io/hiibolt/degine-backend:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: BIND
+              valueFrom:
+                configMapKeyRef:
+                  name: degine
+                  key: BIND
+            - name: SUPABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: degine
+                  key: SUPABASE_URL
+            - name: DATABASE_CA
+              value: /etc/degine/pooler-root.pem
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: degine-database
+                  key: DATABASE_URL
+          volumeMounts:
+            - name: ca
+              mountPath: /etc/degine
+              readOnly: true
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 2Gi
+      volumes:
+        - name: ca
+          configMap:
+            name: degine
+            items:
+              - key: pooler-root.pem
+                path: pooler-root.pem
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: degine-frontend
+  namespace: default
+  labels:
+    app: degine-frontend
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: degine-frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: degine-frontend
+    spec:
+      containers:
+        - name: degine-frontend
+          image: ghcr.io/hiibolt/degine-frontend:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: BACKEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: degine
+                  key: BACKEND_URL
+            - name: API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: degine
+                  key: API_URL
+            - name: WS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: degine
+                  key: WS_URL
+            - name: SUPABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: degine
+                  key: SUPABASE_URL
+            - name: SUPABASE_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: degine
+                  key: SUPABASE_KEY
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
