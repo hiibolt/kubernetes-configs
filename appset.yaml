@@ -1,21 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: homelab-manifest
+  name: hiibolt
   namespace: argocd
 spec:
-  syncPolicy:
-    preserveResourcesOnDeletion: true
   goTemplate: true
+  ignoreApplicationDifferences:
+    - jsonPointers:
+        - /spec/syncPolicy
   generators:
     - git:
         repoURL: https://github.com/hiibolt/kubernetes-configs.git
         revision: HEAD
         directories:
-          - path: manifests/*/*
+          - path: '*'
   template:
     metadata:
-      name: '{{.path.basename}}'
+      name: 'hiibolt-{{.path.basename}}'
     spec:
       project: default
       source:
@@ -23,7 +24,8 @@ spec:
         path: '{{.path.path}}'
         targetRevision: HEAD
       destination:
-        server: "https://kubernetes.default.svc"
-        namespace: '{{index .path.segments 1}}'
-      syncPolicy: 
-        automated: null
+        server: https://kubernetes.default.svc
+        namespace: hiibolt
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true

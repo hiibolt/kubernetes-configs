@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  namespace: hiibolt
+  labels:
+    app: jellyfin
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      initContainers:
+        - name: db-init
+          image: busybox:latest
+          command: ["sh", "-c", "cp -a /nfs-data/. /local-data/"]
+          volumeMounts:
+            - name: nfs-data
+              mountPath: /nfs-data
+            - name: local-data
+              mountPath: /local-data
+      containers:
+        - image: jellyfin/jellyfin:latest
+          name: jellyfin
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: local-data
+              mountPath: /config/data
+            - name: cache
+              mountPath: /cache
+            - name: media
+              mountPath: /mnt/meow/media
+          ports:
+            - containerPort: 8096
+              protocol: TCP
+            - containerPort: 7359
+              protocol: UDP
+          resources:
+            limits:
+              memory: 8Gi
+              ephemeral-storage: 1024Mi
+              cpu: "4"
+            requests:
+              cpu: 100m
+              memory: 2Gi
+        - name: db-backup
+          image: busybox:latest
+          command:
+            [
+              "sh",
+              "-c",
+              'while true; do sleep 300; cp /local-data/jellyfin.db /nfs-data/jellyfin.db; echo "[$(date)] DB backed up to NFS"; done',
+            ]
+          volumeMounts:
+            - name: nfs-data
+              mountPath: /nfs-data
+            - name: local-data
+              mountPath: /local-data
+          resources:
+            limits:
+              memory: 64Mi
+              cpu: "0.1"
+            requests:
+              memory: 32Mi
+              cpu: "0.05"
+      volumes:
+        - name: config
+          hostPath:
+            path: /var/mnt/media/hiibolt/jellyfin/config
+            type: DirectoryOrCreate
+        - name: nfs-data
+          hostPath:
+            path: /var/mnt/media/hiibolt/jellyfin/config/data
+            type: DirectoryOrCreate
+        - name: local-data
+          emptyDir:
+            sizeLimit: 512Mi
+        - name: cache
+          hostPath:
+            path: /var/mnt/media/hiibolt/jellyfin/cache
+            type: DirectoryOrCreate
+        - name: media
+          hostPath:
+            path: /var/mnt/media/hiibolt/media
+            type: DirectoryOrCreate

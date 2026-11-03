@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+  namespace: hiibolt
+  labels:
+    app: sonarr
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      containers:
+        - image: linuxserver/sonarr:latest
+          name: sonarr
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: tv
+              mountPath: /tv
+            - name: transmission
+              mountPath: /data
+          ports:
+            - containerPort: 8989
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+              ephemeral-storage: 1Gi
+            requests:
+              cpu: 50m
+              memory: 256Mi
+      volumes:
+        - name: config
+          hostPath:
+            path: /var/mnt/media/hiibolt/sonarr/config
+            type: DirectoryOrCreate
+        - name: tv
+          hostPath:
+            path: /var/mnt/media/hiibolt/media/tv
+            type: DirectoryOrCreate
+        - name: transmission
+          hostPath:
+            path: /var/mnt/media/hiibolt/transmission/cache
+            type: DirectoryOrCreate

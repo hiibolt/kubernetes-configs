@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyseerr
+  namespace: hiibolt
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/hostname: "jellyseerr"
+    tailscale.com/tags: "tag:k8s"
+spec:
+  selector:
+    app: jellyseerr
+  ports:
+  - protocol: TCP
+    port: 5055
+    targetPort: 5055
+    name: jellyseerr-portal
+  type: LoadBalancer
+  loadBalancerClass: tailscale

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyseerr
+  namespace: hiibolt
+  labels:
+    app: jellyseerr
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyseerr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jellyseerr
+    spec:
+      containers:
+        - image: fallenbagel/jellyseerr:sha-42eec24 # https://hub.docker.com/r/fallenbagel/jellyseerr/tags
+          name: jellyseerr
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+          ports:
+            - containerPort: 5055
+              protocol: TCP
+          resources:
+            limits:
+              memory: 2048Mi
+              ephemeral-storage: 1Gi
+              cpu: "4"
+            requests:
+              cpu: 150m
+              memory: 1024Mi
+      volumes:
+        - name: config
+          hostPath:
+            path: /var/mnt/media/hiibolt/jellyseerr/config
+            type: DirectoryOrCreate

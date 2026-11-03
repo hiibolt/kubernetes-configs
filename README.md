@@ -1,156 +1,35 @@
 <img src="https://github.com/user-attachments/assets/44305f56-034b-4a3f-8720-a53f5bbc9ce8" height=230px>
 
 # `kubernetes-configs`
-A collection of my cluster configuration spread:
-- Automatic GitHub CI/CD via ArgoCD
-- CNI with Cilium
-- Secrets Management with `external-secrets` operator, VaultWarden, and BitWarden CLI
-- Custom DNS via AdGuard
-- Zero Trust HTTPS routing via Cloudflare Tunnels
-- TLS via `cert-manager`
 
-## Noteable Deployments
-- **[`mbo`](https://github.com/hiibolt/mbo)** - Mock Trading Monitor built with Databento ([Live Deployment](https://mbo.hiibolt.com))
-- **[`socials`](https://github.com/hiibolt/socials)** - Links to my socials ([Live Deployment](https://socials.hiibolt.com))
-- **[`personal-site`](https://github.com/hiibolt/personal-site)** - My website and portfolio ([Live Deployment](https://hiibolt.com))
-- **Jellyfin Servarr Stack** - Fully automated media management pipeline
-- **Monikai** - Personal assistant capable of reading my calender and Notion to assist in daily workflows
-- **ArchiSteamfarm** - Steam platform automation
-- **AdGuard** - DNS-level ad filtering and rewrites for all local deployments
+The bit of my homelab that lives on [renkko](https://github.com/senk02/kubernetes-configs), senk's ARM cluster. Each app is a folder at the root of this repo. ArgoCD on her cluster syncs them into the `hiibolt` namespace.
 
-## Setting up Talos with Cilium
-You'll also want to define a few convenience variables:
-```bash
-export TALOS_IP="<control-plane-node-ip>"
-export TALOS_API_PORT="6443"
-export CLUSTER_NAME="nuclearbombconsole"
-```
+Renkko already runs Cilium, ArgoCD, cert-manager, external-secrets, and the gateway. This repo does not install any of that.
 
-Next, we'll generate and apply the config. Note that the second command should take a few minutes, monitor the machine's progress before moving on.
-```bash
-cd nuclearbomb/talos
-talosctl gen config "$CLUSTER_NAME" "https://$TALOS_IP:$TALOS_API_PORT" --config-patch @cilium-patch.yaml
-talosctl apply-config --insecure -n "$TALOS_IP" --file controlplane.yaml
-```
+The old full cluster (Talos, Cilium, Vaultwarden, monitoring, the rest) is on the [`full-cluster`](https://github.com/hiibolt/kubernetes-configs/tree/full-cluster) branch.
 
-After completion, we'll bootstrap the cluster and `kubeconfig`:
-```bash
-talosctl bootstrap --nodes "$TALOS_IP" --endpoints "$TALOS_IP" --talosconfig=./talosconfig
-talosctl kubeconfig --nodes "$TALOS_IP" --endpoints "$TALOS_IP" --talosconfig=./talosconfig
-```
+Moving in is written up in [MIGRATION.md](MIGRATION.md).
 
-You can set up endpoints in your `talosconfig` file with the following:
-```bash
-talosctl --talosconfig=./talosconfig config endpoints $CONTROL_PLANE_IP
-```
+## What runs here
 
-Lastly, tack on your remaining worker nodes too:
-```bash
-talosctl apply-config --insecure -n "<control_plane_ip>" --file controlplane.yaml
-talosctl apply-config --insecure -n "<worker_ip>" --file worker.yaml
-```
+- Automatic GitHub deploys via her ArgoCD
+- Secrets from her Vaultwarden, through the `external-secrets` operator she already runs
+- Public HTTPS through a Cloudflare Tunnel
+- LAN hostnames through her existing Cilium gateway
 
-Then, we'll install apply Cilium's configs:
-```bash
-kubectl create namespace certificate
+## Notable deployments
 
-helm repo add cilium https://helm.cilium.io/
+- **[`personal-site`](https://github.com/hiibolt/personal-site)** / [`socials`](https://github.com/hiibolt/socials). My site and links ([hiibolt.com](https://hiibolt.com))
+- **[`degine`](https://github.com/hiibolt/degine)** ([degine.hiibolt.com](https://degine.hiibolt.com))
+- **Jellyfin servarr stack.** Jellyfin, Jellyseerr, Sonarr, Radarr, Prowlarr, FlareSolverr, and Transmission, with the library on the NAS
+- **Cloudflared.** The tunnel that publishes the names above
 
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml \
-  -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml \
-  -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml \
-  -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/experimental/gateway.networking.k8s.io_gateways.yaml \
-  -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/experimental/gateway.networking.k8s.io_tlsroutes.yaml \
-  -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.2.1/config/crd/experimental/gateway.networking.k8s.io_grpcroutes.yaml
-```
+## How a folder becomes an app
 
-Then, apply the Cilium `Application` config:
-```bash
-export cilium_applicationyaml=$(curl -sL "https://raw.githubusercontent.com/hiibolt/kubernetes-configs/refs/heads/main/nuclearbomb/namespaces/kube-system/cilium/application.yaml" | yq eval-all '. | select(.metadata.name == "cilium-application" and .kind == "Application")' -)
-export cilium_name=$(echo "$cilium_applicationyaml" | yq eval '.metadata.name' -)
-export cilium_chart=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.chart' -)
-export cilium_repo=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.repoURL' -)
-export cilium_namespace=$(echo "$cilium_applicationyaml" | yq eval '.spec.destination.namespace' -)
-export cilium_version=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.targetRevision' -)
-export cilium_values=$(echo "$cilium_applicationyaml" | yq eval '.spec.source.helm.valuesObject' -)
+In her ArgoCD UI, one new app points at this repo. That app is `appset.yaml`, which makes one app per top-level folder (`hiibolt-jellyfin`, `hiibolt-degine`, and so on) and drops it in the `hiibolt` namespace. Auto-sync is a switch on each app in that same UI. Her repo is not changed.
 
-echo "$cilium_values" | helm template $cilium_name $cilium_chart --repo $cilium_repo --version $cilium_version --namespace $cilium_namespace --values - | kubectl apply --filename -
-```
+Her cluster is ARM. The public images already publish an arm64 build. `ghcr.io/hiibolt/socials`, `degine-backend`, and `degine-frontend` need one too, or those pods will not start.
 
-...lastly, set up the other CRDs - namely, the IP pool for Cilium to allocate from:
-```bash
-kubectl apply -f nuclearbomb/namespaces/kube-system/cilium/crd.yaml
-```
+## Where the data lives
 
-## Setting up ArgoCD
-First, we'll deploy Cilium:
-```bash
-kubectl create namespace argocd
-
-export argocd_applicationyaml=$(curl -sL "https://raw.githubusercontent.com/hiibolt/kubernetes-configs/refs/heads/main/nuclearbomb/namespaces/argocd/argocd/application.yaml" | yq eval-all '. | select(.metadata.name == "argocd-application" and .kind == "Application")' -)
-export argocd_name=$(echo "$argocd_applicationyaml" | yq eval '.metadata.name' -)
-export argocd_chart=$(echo "$argocd_applicationyaml" | yq eval '.spec.source.chart' -)
-export argocd_repo=$(echo "$argocd_applicationyaml" | yq eval '.spec.source.repoURL' -)
-export argocd_namespace=$(echo "$argocd_applicationyaml" | yq eval '.spec.destination.namespace' -)
-export argocd_version=$(echo "$argocd_applicationyaml" | yq eval '.spec.source.targetRevision' -)
-export argocd_values=$(echo "$argocd_applicationyaml" | yq eval '.spec.source.helm.valuesObject' - | yq eval 'del(.configs.cm)' -)
-export argocd_config=$(curl -sL "https://raw.githubusercontent.com/hiibolt/kubernetes-configs/refs/heads/main/nuclearbomb/namespaces/argocd/argocd/appset.yaml" | yq eval-all '. | select(.kind == "AppProject" or .kind == "ApplicationSet")' -)
-
-echo "$argocd_values" | helm template $argocd_name $argocd_chart --repo $argocd_repo --version $argocd_version --namespace $argocd_namespace --values - | kubectl apply --namespace $argocd_namespace --filename -
-
-echo "$argocd_config" | kubectl apply --filename -
-```
-
-Then, deploy the service to log in:
-```bash
-k apply -f nuclearbomb/namespaces/argocd/argocd/service.yaml
-ksc argocd
-k get svc | grep -i 'argocd-application-server-lb'
-```
-
-At least initially, you'll also need the starter password:
-```bash
-argocd admin initial-password -n argocd
-```
-
-## Setting up External Secrets with Vaultwarden
-Firstly, sync Vaultwarden, then the `external-secrets` namespace and Helm chart via ArgoCD - takes a sec ^^
-
-Switch to the namespace and create a (temporary) secret for `bitwarden-cli`. This is necessary because by default it's self-referential and fails.
-```bash
-ksc external-secrets
-k create secret generic bitwarden-cli --from-literal='BW_USER=...' --from-literal='BW_PASSWORD=...'
-```
-
-Next, sync the cluster secret store, then `bitwarden-cli`. It'll fail due to the external secret - delete this and the secret:
-```bash
-k delete es bitwarden-cli
-k delete secret bitwarden-cli
-```
-
-Then, re-sync the external secret via ArgoCD.
-
-## Troubleshooting: External Secrets Failing Cluster-Wide
-If all external secrets are failing to sync, it's likely that the `bitwarden-cli` pod has restarted and can't come back up due to its circular dependency (it needs its own secret to start, but that secret is managed by itself).
-
-To fix this, re-run the bootstrap process:
-```bash
-ksc external-secrets
-k create secret generic bitwarden-cli --from-literal='BW_USER=...' --from-literal='BW_PASSWORD=...'
-```
-
-Once the `bitwarden-cli` pod is running again, clean up so the ExternalSecret operator can take back ownership:
-```bash
-k delete es bitwarden-cli
-k delete secret bitwarden-cli
-```
-
-Then re-sync the `bitwarden-cli` ExternalSecret via ArgoCD. All other secrets should recover within their 5-minute refresh interval.
-
-## Setting up Certificates with `cert-manager`
-First, sync `certificate-namespace` and `certificate` - **give it about 5 minutes to complete the certificate challenge** ^^
-
-Then, sync `cert-manager`.
-
-## Final Sync
-Be sure to update any specific `nodeSelectors` in the `media` workspace, but otherwise, you're good to go! Well done :3
+Files live at `/var/mnt/media/hiibolt` on the disk renkko already mounts. Her `library` and `downloads` stay beside that folder. The copy, and how to put the three passwords in her vault, is in [MIGRATION.md](MIGRATION.md).
